@@ -6,8 +6,9 @@ import {
   FaCog,
   FaQuestionCircle,
   FaSignOutAlt,
+  FaTasks,
 } from "react-icons/fa";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight, MdTask } from "react-icons/md";
 import logo from "../assets/logo.png";
 import profile from "../assets/profile.png";
 
@@ -20,7 +21,7 @@ export default function Sidebar({ children }) {
     <div className="flex h-screen">
       <aside
         className={`fixed top-0 left-0 h-full transition-all duration-300 ${
-          expanded ? "w-[300px]" : "w-[80px]"
+          expanded ? "w-[250px]" : "w-[80px]"
         } bg-white border-r shadow-sm z-50`}
       >
         <nav className="h-full flex flex-col">
@@ -46,12 +47,31 @@ export default function Sidebar({ children }) {
 
           <SidebarContext.Provider value={{ expanded }}>
             <ul className="flex-1 px-3 space-y-2">
-              <SidebarItem icon={<FaHome />} text="Home" />
-              <SidebarItem icon={<FaBell />} text="Notifications" alert />
-              <SidebarItem icon={<FaEnvelope />} text="Messages" />
-              <SidebarItem icon={<FaCog />} text="Settings" />
-              <SidebarItem icon={<FaQuestionCircle />} text="Help" />
-              <SidebarItem icon={<FaSignOutAlt />} text="Log out" />
+              <SidebarItem icon={<FaHome />} text="Home" to="/" />
+              <SidebarItem
+                icon={<FaBell />}
+                text="Notifications"
+                to="/notifications"
+                alert
+              />
+              <SidebarItem
+                icon={<FaEnvelope />}
+                text="Messages"
+                to="/messages"
+              />
+              <SidebarItem icon={<FaCog />} text="Settings" to="/settings" />
+              <SidebarItem icon={<FaQuestionCircle />} text="Help" to="/help" />
+              <SidebarItem icon={<MdTask />} text="AddTask" to="/add-task" />
+              <SidebarItem
+                icon={<FaTasks />}
+                text="ShowAllTasks"
+                to="/show-tasks"
+              />
+              <SidebarItem
+                icon={<FaSignOutAlt />}
+                text="LogOut"
+                to="/log-out"
+              />
             </ul>
           </SidebarContext.Provider>
 
@@ -78,7 +98,7 @@ export default function Sidebar({ children }) {
 
       <main
         className={`flex-1 transition-all duration-300 ${
-          expanded ? "ml-[300px]" : "ml-[80px]"
+          expanded ? "ml-[250px]" : "ml-[80px]"
         } p-4 bg-gray-100`}
       >
         {children}
@@ -87,11 +107,15 @@ export default function Sidebar({ children }) {
   );
 }
 
-export function SidebarItem({ icon, text, active, alert }) {
+import { useNavigate } from "react-router-dom";
+
+export function SidebarItem({ icon, text, active, alert, to }) {
   const { expanded } = useContext(SidebarContext);
+  const navigate = useNavigate();
 
   return (
     <li
+      onClick={() => navigate(to)}
       className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${
         active
           ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
