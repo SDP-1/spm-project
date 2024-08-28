@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const itemRoutes = require("./routers/itemRoutes");
 const taskRoutes = require("./routers/taskRoutes");
+const projectRoutes = require('./routers/projectRoutes'); 
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -21,12 +22,12 @@ const io = new Server(server, {
 });
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "your_mongodb_uri_here";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://avindiobeyesekere:HrKnOaKiVN7BlAeQ@cluster0.edwkd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose
   .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   })
   .then(() => {
     console.log("Connected to MongoDB");
@@ -37,6 +38,7 @@ mongoose
 // Emit a message when a new item is added
 app.use("/api/items", itemRoutes(io));
 app.use("/api", taskRoutes);
+app.use('/api/projects', projectRoutes); 
 
 io.on("connection", (socket) => {
   console.log("A user connected");
