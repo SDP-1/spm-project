@@ -61,15 +61,15 @@ export default function Sidebar({ children }) {
               />
               <SidebarItem icon={<FaCog />} text="Settings" to="/settings" />
               <SidebarItem icon={<FaQuestionCircle />} text="Help" to="/help" />
-              <SidebarItem icon={<MdTask />} text="AddTask" to="/add-task" />
+              <SidebarItem icon={<MdTask />} text="Add task" to="/add-task" />
               <SidebarItem
                 icon={<FaTasks />}
-                text="ShowAllTasks"
+                text="Show all tasks"
                 to="/show-tasks"
               />
               <SidebarItem
                 icon={<FaSignOutAlt />}
-                text="LogOut"
+                text="Log out"
                 to="/log-out"
               />
             </ul>
