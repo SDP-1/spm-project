@@ -20,6 +20,8 @@ const TaskScheduler = () => {
   const [specificDate, setSpecificDate] = useState("");
   const [selectionMethod, setSelectionMethod] = useState("For Now");
   const [error, setError] = useState("");
+  const [repository, setRepository] = useState("");
+  const [repositoris, setRepositoris] = useState(["Option 1", "Option 2", "Option 3"]);
 
   const tools = [
     {
@@ -86,11 +88,15 @@ const TaskScheduler = () => {
       setError("Description is required.");
       return;
     }
+    if (!repository) {
+      setError("Repository is required.");
+      return;
+    }
     if (selectedTools.length === 0) {
       setError("You must select at least one tool.");
       return;
     }
-
+  
     const invalidToolMetrics = selectedTools.find((tool) => {
       return !Object.values(toolMetrics[tool] || {}).includes(true);
     });
@@ -98,7 +104,7 @@ const TaskScheduler = () => {
       setError("You must select at least one metric for each selected tool.");
       return;
     }
-
+  
     setError("");
     try {
       const taskData = {
@@ -111,10 +117,11 @@ const TaskScheduler = () => {
         frequencyValue,
         specificDate,
         selectionMethod,
+        repository // Include selected repository in task data
       };
-
+  
       const response = await axios.post("/api/tasks", taskData);
-
+  
       if (response.status === 200) {
         alert("Task scheduled successfully!");
         setTaskName("");
@@ -126,12 +133,14 @@ const TaskScheduler = () => {
         setFrequencyValue(8);
         setSpecificDate("");
         setSelectionMethod("For Now");
+        setRepository(""); 
       }
     } catch (error) {
       console.error("Error scheduling task:", error);
       setError("Failed to schedule task. Please try again.");
     }
   };
+  
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
@@ -139,11 +148,21 @@ const TaskScheduler = () => {
         Schedule a New Code Analysis Task
       </h2>
 
+      {/* <TaskForm
+        taskName={taskName}
+        setTaskName={setTaskName}
+        description={description}
+        setDescription={setDescription}
+      /> */}
       <TaskForm
         taskName={taskName}
         setTaskName={setTaskName}
         description={description}
         setDescription={setDescription}
+        repositoris={repositoris}
+        repository={repository}
+        setRepository={setRepository}
+        disable={false} // Adjust as needed
       />
 
       <SelectionMethod

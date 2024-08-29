@@ -10,9 +10,9 @@ const TaskPreview = () => {
   const [sortType, setSortType] = useState("updatedAt"); // Default sort by updated time
   const [error, setError] = useState("");
   const [showMenu, setShowMenu] = useState(null); // State to track which task's menu is open
-  const deleteTaskIdRef = useRef(null); // Use a ref to track which task to delete
-  const menuRef = useRef(null); // Ref to track the menu element
   const navigate = useNavigate(); // Hook for navigation
+
+  const menuRefs = useRef({}); // To track refs for each menu
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -32,9 +32,12 @@ const TaskPreview = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(null); // Close the menu if clicking outside
-      }
+      // Iterate over each menuRef to check if the click is outside
+      Object.keys(menuRefs.current).forEach((taskId) => {
+        if (menuRefs.current[taskId] && !menuRefs.current[taskId].contains(event.target)) {
+          setShowMenu(null); // Close the menu if clicking outside
+        }
+      });
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -83,47 +86,25 @@ const TaskPreview = () => {
     setFilteredTasks(sortTasks(updatedTasks, sortType));
   };
 
-  const handleDelete = async () => {
-    const taskId = deleteTaskIdRef.current; // Use ref to get the task ID
-
-    if (!taskId) {
-      console.error("No task ID to delete");
-      return;
-    }
-
-    console.log("Attempting to delete task with ID:", taskId); // Debugging log
-
-    try {
-      await axios.delete(`/api/tasks/${taskId}`);
-
-      // Update the tasks state by removing the deleted task
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
-
-      // Update the filteredTasks state similarly
-      setFilteredTasks((prevFilteredTasks) =>
-        prevFilteredTasks.filter((task) => task._id !== taskId)
-      );
-
-      // Optionally close any UI menu related to the task
-      setShowMenu(null);
-      deleteTaskIdRef.current = null; // Reset deleteTaskId after successful deletion
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      setError("Failed to delete task");
-    }
-  };
-
-  const confirmDelete = (taskId) => {
-    deleteTaskIdRef.current = taskId; // Set ref value
-
+  const handleDelete = async (taskId) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task? This action cannot be undone."
+      "Are you sure you want to delete this task? This action cannot be recovered."
     );
 
     if (confirmDelete) {
-      handleDelete(); // Call handleDelete after confirming
-    } else {
-      deleteTaskIdRef.current = null; // Reset ref if the user cancels
+      try {
+        await axios.delete(`/api/tasks/${taskId}`);
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task._id !== taskId)
+        );
+        setFilteredTasks((prevFilteredTasks) =>
+          prevFilteredTasks.filter((task) => task._id !== taskId)
+        );
+        setShowMenu(null); // Close the menu after deletion
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        setError("Failed to delete task");
+      }
     }
   };
 
@@ -173,7 +154,6 @@ const TaskPreview = () => {
         >
           <FaSort className="text-lg" />
           <span className="ml-2">
-            {" "}
             {sortType === "updatedAt"
               ? "Updated Time"
               : sortType === "createdAt"
@@ -207,7 +187,7 @@ const TaskPreview = () => {
                     }`}
                   />
                 </button>
-                <div className="relative" ref={menuRef}>
+                <div className="relative">
                   <FaEllipsisV
                     className="text-gray-500 cursor-pointer text-sm"
                     onClick={() =>
@@ -215,10 +195,16 @@ const TaskPreview = () => {
                     }
                   />
                   {showMenu === task._id && (
-                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg py-2">
+                    <div
+                      className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg py-2"
+                      ref={(el) => (menuRefs.current[task._id] = el)} // Set ref for this task's menu
+                    >
                       <button
                         className="w-full text-left px-4 py-1 text-red-600 hover:bg-gray-100 text-xs"
-                        onClick={() => confirmDelete(task._id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents event from bubbling up and triggering `handleClickOutside`
+                          handleDelete(task._id);
+                        }}
                       >
                         Delete
                       </button>
