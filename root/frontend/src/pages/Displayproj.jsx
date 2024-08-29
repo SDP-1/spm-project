@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEllipsisV, FaArrowRight, FaPlus, FaFilter, FaHeart } from 'react-icons/fa';
+import { FaEllipsisV, FaArrowRight, FaFilter, FaHeart } from 'react-icons/fa';
 
 const Displayproj = () => {
   const [projects, setProjects] = useState([]);
@@ -74,12 +74,12 @@ const Displayproj = () => {
               <p className="text-sm text-gray-600">{project.projectDetails}</p>
             </div>
             <div className="flex items-center space-x-4">
-            <button
+            <a href="/newrepo"
   className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
 >
   <span className="mr-2">Add Repository</span>
   <FaArrowRight />
-</button>
+</a>
 
               <FaHeart className="text-[#41889e] cursor-pointer" />
 
@@ -106,13 +106,13 @@ const Displayproj = () => {
         </div>
       ))}
 
-      <button
-        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
-        onClick={() => alert('Add a new project')}
-      >
+<a
+  href="/createrepo" // Path to the Createrepo component
+  className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
+>
         <div className="text-white text-xl font-bold">+</div>
         <span>Add New Project</span>
-      </button>
+        </a>
     </div>
   );
 };

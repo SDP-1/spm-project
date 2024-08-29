@@ -11,8 +11,12 @@ const { Server } = require("socket.io");
 dotenv.config();
 
 const app = express();
+const githubRoutes = require('./routers/githubRoutes');
+
+
 app.use(cors());
 app.use(express.json());
+app.use('/api/github', githubRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -39,6 +43,12 @@ mongoose
 app.use("/api/items", itemRoutes(io));
 app.use("/api", taskRoutes);
 app.use('/api/projects', projectRoutes); 
+
+
+// app.listen(5000, () => {
+//   console.log('Server running on port 5000');
+// });
+
 
 io.on("connection", (socket) => {
   console.log("A user connected");

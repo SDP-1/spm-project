@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
-import { FaClone } from 'react-icons/fa'; // Importing clone icon
+import { FaClone } from 'react-icons/fa';
 
 const Newrepo = () => {
   const [repoUrl, setRepoUrl] = useState('');
+  const [files, setFiles] = useState([]);
 
-  const handleClone = () => {
-    // Handle cloning logic here
-    alert(`Cloning repository: ${repoUrl}`);
+  const handleClone = async () => {
+    try {
+      const encodedUrl = encodeURIComponent(repoUrl);
+      const response = await fetch(`http://localhost:5000/api/github/repo-files?repoUrl=${encodedUrl}`);
+      const data = await response.json();
+      setFiles(data); // Set the files in the state
+    } catch (error) {
+      console.error('Error fetching repository files:', error);
+    }
   };
-//add commit
+
   return (
-    <div className="min-h-screen flex flex-col justify-start items-center py-4">
+    <div className="min-h-screen flex flex-col items-center py-4 space-y-4 ">
+      {/* Cloning Box */}
       <div className="w-1/2 bg-[#e0e0e0] p-4 border border-[#c0c0c0] rounded-md shadow-md flex items-center">
         <input
           type="text"
@@ -26,6 +34,19 @@ const Newrepo = () => {
           <FaClone className="mr-2" />
           Clone Repository
         </button>
+      </div>
+
+      {/* File Display Section */}
+      <div className="w-1/2 mt-4">
+        {files.length > 0 ? (
+          files.map(file => (
+            <div key={file.sha} className="p-2 bg-white border border-gray-300 rounded-md mb-2">
+              <a href={file.html_url} target="_blank" rel="noopener noreferrer">{file.name}</a>
+            </div>
+          ))
+        ) : (
+          <p>No files to display</p>
+        )}
       </div>
     </div>
   );
