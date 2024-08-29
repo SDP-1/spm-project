@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaEllipsisV, FaArrowRight, FaPlus } from 'react-icons/fa';
+import { FaEllipsisV, FaArrowRight, FaPlus, FaFilter, FaHeart } from 'react-icons/fa';
 
 const Displayproj = () => {
   const [projects, setProjects] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -40,9 +41,32 @@ const Displayproj = () => {
     setDropdownVisible(dropdownVisible === index ? null : index);
   };
 
+  const filteredProjects = projects.filter(project =>
+    project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto p-4 relative">
-      {projects.map((project, index) => (
+      <div className="flex mb-4 space-x-4 items-center">
+        <input
+          type="text"
+          placeholder="Search projects..."
+          className="w-1/4 px-4 py-2 border rounded-md focus:outline-none"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button
+          className="flex items-center px-4 py-2 border rounded-md bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none"
+        >
+          <FaFilter className="mr-2" />
+          Filter
+        </button>
+        <span className="flex items-center text-[#41889e] font-semibold">
+          {filteredProjects.length} Project{filteredProjects.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      {filteredProjects.map((project, index) => (
         <div key={project._id} className="mb-4 p-4 border rounded-md shadow-md space-y-2 bg-white">
           <div className="flex justify-between items-center">
             <div>
@@ -50,14 +74,21 @@ const Displayproj = () => {
               <p className="text-sm text-gray-600">{project.projectDetails}</p>
             </div>
             <div className="flex items-center space-x-4">
-              <FaArrowRight className="text-blue-500 cursor-pointer" />
+            <button
+  className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
+>
+  <span className="mr-2">Add Repository</span>
+  <FaArrowRight />
+</button>
+
+              <FaHeart className="text-[#41889e] cursor-pointer" />
 
               <div className="relative">
                 <button
                   onClick={() => toggleDropdown(index)}
                   className="focus:outline-none"
                 >
-                  <FaEllipsisV className="text-gray-600" />
+                  <FaEllipsisV className="text-[#41889e]" />
                 </button>
                 {dropdownVisible === index && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
@@ -76,10 +107,11 @@ const Displayproj = () => {
       ))}
 
       <button
-        className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
+        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
         onClick={() => alert('Add a new project')}
       >
-        <FaPlus className="text-white" />
+        <div className="text-white text-xl font-bold">+</div>
+        <span>Add New Project</span>
       </button>
     </div>
   );
