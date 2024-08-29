@@ -1,106 +1,177 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import { FaStar, FaEllipsisV, FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const TaskPreview = () => {
   const [tasks, setTasks] = useState([]);
-  const [error, setError] = useState('');
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState("");
+  const [showMenu, setShowMenu] = useState(null); // State to track which task's menu is open
+  const deleteTaskIdRef = useRef(null); // Use a ref to track which task to delete
+  const menuRef = useRef(null); // Ref to track the menu element
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('/api/tasks');
+        const response = await axios.get("/api/tasks");
         setTasks(response.data);
+        setFilteredTasks(response.data);
       } catch (error) {
-        console.error('Error fetching tasks:', error);
-        setError('Failed to fetch tasks');
+        console.error("Error fetching tasks:", error);
+        setError("Failed to fetch tasks");
       }
     };
 
     fetchTasks();
   }, []);
 
-  const handleUpdate = (taskId) => {
-    console.log('Update task', taskId);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(null); // Close the menu if clicking outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+    const filtered = tasks.filter(
+      (task) =>
+        task.taskName.toLowerCase().includes(value) ||
+        task.description.toLowerCase().includes(value)
+    );
+    setFilteredTasks(filtered);
   };
 
-  const handleRemove = (taskId) => {
-    console.log('Remove task', taskId);
+  const toggleStar = (taskId) => {
+    const updatedTasks = tasks.map((task) =>
+      task._id === taskId ? { ...task, starred: !task.starred } : task
+    );
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks);
+  };
+
+  const handleDelete = async () => {
+    const taskId = deleteTaskIdRef.current; // Use ref to get the task ID
+
+    if (!taskId) {
+      console.error("No task ID to delete");
+      return;
+    }
+
+    console.log("Attempting to delete task with ID:", taskId); // Debugging log
+
+    try {
+      await axios.delete(`/api/tasks/${taskId}`);
+
+      // Update the tasks state by removing the deleted task
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+
+      // Update the filteredTasks state similarly
+      setFilteredTasks((prevFilteredTasks) =>
+        prevFilteredTasks.filter((task) => task._id !== taskId)
+      );
+
+      // Optionally close any UI menu related to the task
+      setShowMenu(null);
+      deleteTaskIdRef.current = null; // Reset deleteTaskId after successful deletion
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      setError("Failed to delete task");
+    }
+  };
+
+  const confirmDelete = (taskId) => {
+    deleteTaskIdRef.current = taskId; // Set ref value
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this task? This action cannot be undone."
+    );
+
+    if (confirmDelete) {
+      handleDelete(); // Call handleDelete after confirming
+    } else {
+      deleteTaskIdRef.current = null; // Reset ref if the user cancels
+    }
+  };
+
+  const handleShowDetails = (taskId) => {
+    navigate(`/tasks/${taskId}`); // Navigate to task details page
   };
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
-      <h2 className="text-2xl font-bold text-indigo-700 mb-6">Scheduled Tasks</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-indigo-700">Scheduled Tasks</h2>
+      </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr className="border-b bg-gray-100">
-            <th className="py-2 px-4 text-left">Task Name</th>
-            <th className="py-2 px-4 text-left">Description</th>
-            <th className="py-2 px-4 text-left">Tools & Metrics</th>
-            <th className="py-2 px-4 text-left">Schedule</th>
-            <th className="py-2 px-4 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tasks.map((task) => (
-            <tr key={task._id} className="border-b">
-              <td className="py-2 px-4 font-semibold text-indigo-700">{task.taskName}</td>
-              <td className="py-2 px-4">{task.description}</td>
-              <td className="py-2 px-4">
-                <table className="min-w-full bg-white border border-gray-200">
-                  <thead>
-                    <tr className="border-b bg-gray-100">
-                      <th className="py-1 px-2 text-left">Tool</th>
-                      <th className="py-1 px-2 text-left">Metrics</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(task.toolMetrics).map(([tool, metrics]) => (
-                      <tr key={tool}>
-                        <td className="py-1 px-2 font-semibold">{tool}</td>
-                        <td className="py-1 px-2">
-                          <ul className="list-disc ml-4">
-                            {Object.entries(metrics).map(([metric, isSelected]) =>
-                              isSelected ? <li key={metric}>{metric}</li> : null
-                            )}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </td>
-              <td className="py-2 px-4">
-                {task.recurring ? (
-                  task.frequencyType === 'Hourly' ? (
-                    `Every ${task.frequencyValue} hours`
-                  ) : task.specificDate ? (
-                    `On ${new Date(task.specificDate).toLocaleString()}`
-                  ) : (
-                    'N/A'
-                  )
-                ) : (
-                  'One Time'
-                )}
-              </td>
-              <td className="py-2 px-4 flex justify-end space-x-2">
+
+      <div className="flex items-center mb-4 border border-gray-300 rounded-lg" style={{ width: '400px' }}>
+        <FaSearch className="ml-3 text-gray-500" />
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Search for tasks..."
+          className="flex-1 px-3 py-2 outline-none bg-transparent"
+        />
+      </div>
+
+      <div className="space-y-4">
+        {filteredTasks.map((task) => (
+          <div
+            key={task._id}
+            className="bg-white p-4 rounded-lg shadow-lg relative"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-indigo-700">
+                {task.taskName}
+              </h3>
+              <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => handleUpdate(task._id)}
-                  className="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700"
+                  onClick={() => handleShowDetails(task._id)}
+                  className="text-xs text-indigo-600 hover:underline"
                 >
-                  Update
+                  Show more details
                 </button>
-                <button
-                  onClick={() => handleRemove(task._id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700"
-                >
-                  Remove
+                <button onClick={() => toggleStar(task._id)}>
+                  <FaStar
+                    className={`text-xl ${
+                      task.starred ? "text-yellow-500" : "text-gray-300"
+                    }`}
+                  />
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <div className="relative" ref={menuRef}>
+                  <FaEllipsisV
+                    className="text-gray-500 cursor-pointer text-sm"
+                    onClick={() =>
+                      setShowMenu(showMenu === task._id ? null : task._id)
+                    }
+                  />
+                  {showMenu === task._id && (
+                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg py-2">
+                      <button
+                        className="w-full text-left px-4 py-1 text-red-600 hover:bg-gray-100 text-xs"
+                        onClick={() => confirmDelete(task._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <p className="text-gray-500 text-sm">{task.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

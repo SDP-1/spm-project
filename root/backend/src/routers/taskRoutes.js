@@ -26,4 +26,55 @@ router.get("/tasks", async (req, res) => {
   }
 });
 
+// Route to get a specific task by ID
+router.get("/tasks/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const task = await Task.findById(taskId);
+
+    if (task) {
+      res.status(200).json(task);
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching task details:", error);
+    res.status(500).json({ message: "Failed to fetch task details" });
+  }
+});
+
+// Route to update a task by ID
+router.put("/tasks/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const updatedTaskData = req.body;
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, { new: true });
+
+    if (updatedTask) {
+      res.status(200).json({ message: "Task updated successfully!", task: updatedTask });
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ message: "Failed to update task" });
+  }
+});
+
+// Route to delete a task by ID
+router.delete("/tasks/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+    if (deletedTask) {
+      res.status(200).json({ message: "Task deleted successfully!" });
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    res.status(500).json({ message: "Failed to delete task" });
+  }
+});
+
 module.exports = router;
