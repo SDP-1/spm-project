@@ -8,7 +8,7 @@ const Newrepo = () => {
     // Handle cloning logic here
     alert(`Cloning repository: ${repoUrl}`);
   };
-
+//add commit
   return (
     <div className="min-h-screen flex flex-col justify-start items-center py-4">
       <div className="w-1/2 bg-[#e0e0e0] p-4 border border-[#c0c0c0] rounded-md shadow-md flex items-center">
