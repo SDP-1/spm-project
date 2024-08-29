@@ -19,19 +19,14 @@ const taskSchema = new mongoose.Schema(
       enum: ["For Now", "Recurring"],
       default: "For Now",
     },
-    // createdAt: { type: Date, default: Date.now }, // Add createdAt field
-    // updatedAt: { type: Date, default: Date.now }, // Add updatedAt field
+    repository: { type: String },
+    star: { type: Boolean, default: false },
+    createdUser: { type: String },
   },
   {
     timestamps: true,
   }
 );
-
-// Update the `updatedAt` field before saving the document
-// taskSchema.pre('save', function(next) {
-//   this.updatedAt = Date.now();
-//   next();
-// });
 
 const Task = mongoose.model("Task", taskSchema);
 
