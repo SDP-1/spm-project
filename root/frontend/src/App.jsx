@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Newrepo from "./pages/Newrepo";
 import Createrepo from "./pages/Createrepo";
+import Displayproj from "./pages/Displayproj";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             />
             <Route path="/newrepo" element={<Newrepo />} />
             <Route path="/createrepo" element={<Createrepo />} />
+            <Route path="/displayproj" element={<Displayproj/>} />
            
           </Routes>
         </main>
