@@ -1,6 +1,6 @@
 import React from "react";
 
-const MetricSelector = ({ tools, selectedTools, toolMetrics, handleMetricChange}) => (
+const MetricSelector = ({ tools, selectedTools, toolMetrics, handleMetricChange, disable }) => (
   <div className="mb-4">
     <h3 className="text-lg font-semibold mb-2">Select Metrics for Each Tool</h3>
     {tools
@@ -14,8 +14,9 @@ const MetricSelector = ({ tools, selectedTools, toolMetrics, handleMetricChange}
                 type="checkbox"
                 id={`${tool.name}-${metric}`}
                 checked={toolMetrics[tool.name] && toolMetrics[tool.name][metric]}
-                onChange={() => handleMetricChange(tool.name, metric)}
+                onChange={() => !disable && handleMetricChange(tool.name, metric)}
                 className="mr-2"
+                disabled={disable}
               />
               <label htmlFor={`${tool.name}-${metric}`} className="text-gray-700">
                 {metric}

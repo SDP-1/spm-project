@@ -1,6 +1,6 @@
 import React from "react";
 
-const TaskForm = ({ taskName, setTaskName, description, setDescription }) => (
+const TaskForm = ({ taskName, setTaskName, description, setDescription, disable }) => (
   <>
     <div className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="taskName">
@@ -11,7 +11,8 @@ const TaskForm = ({ taskName, setTaskName, description, setDescription }) => (
         id="taskName"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         value={taskName}
-        onChange={(e) => setTaskName(e.target.value)}
+        onChange={(e) => !disable && setTaskName(e.target.value)}
+        disabled={disable}
       />
     </div>
 
@@ -24,7 +25,8 @@ const TaskForm = ({ taskName, setTaskName, description, setDescription }) => (
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         rows="4"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={(e) => !disable && setDescription(e.target.value)}
+        disabled={disable}
       />
     </div>
   </>
