@@ -35,7 +35,6 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 // Emit a message when a new item is added
-app.use("/api/items", itemRoutes(io));
 app.use("/api", taskRoutes);
 
 io.on("connection", (socket) => {

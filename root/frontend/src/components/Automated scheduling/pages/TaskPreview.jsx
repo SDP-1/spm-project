@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { FaStar, FaEllipsisV, FaSearch } from "react-icons/fa";
+import { FaStar, FaEllipsisV, FaSearch, FaSort } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const TaskPreview = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortType, setSortType] = useState("updatedAt"); // Default sort by updated time
   const [error, setError] = useState("");
   const [showMenu, setShowMenu] = useState(null); // State to track which task's menu is open
   const deleteTaskIdRef = useRef(null); // Use a ref to track which task to delete
@@ -17,8 +18,9 @@ const TaskPreview = () => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get("/api/tasks");
-        setTasks(response.data);
-        setFilteredTasks(response.data);
+        const sortedTasks = sortTasks(response.data, sortType);
+        setTasks(sortedTasks);
+        setFilteredTasks(sortedTasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
         setError("Failed to fetch tasks");
@@ -26,7 +28,7 @@ const TaskPreview = () => {
     };
 
     fetchTasks();
-  }, []);
+  }, [sortType]); // Re-run when sortType changes
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -39,6 +41,19 @@ const TaskPreview = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const sortTasks = (tasks, type) => {
+    return [...tasks].sort((a, b) => {
+      if (type === "createdAt") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (type === "updatedAt") {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      } else if (type === "taskName") {
+        return a.taskName.localeCompare(b.taskName);
+      }
+      return 0;
+    });
+  };
+
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
@@ -47,7 +62,17 @@ const TaskPreview = () => {
         task.taskName.toLowerCase().includes(value) ||
         task.description.toLowerCase().includes(value)
     );
-    setFilteredTasks(filtered);
+    setFilteredTasks(sortTasks(filtered, sortType)); // Apply sorting to filtered tasks
+  };
+
+  const handleSort = () => {
+    const newSortType =
+      sortType === "updatedAt"
+        ? "createdAt"
+        : sortType === "createdAt"
+        ? "taskName"
+        : "updatedAt";
+    setSortType(newSortType);
   };
 
   const toggleStar = (taskId) => {
@@ -55,7 +80,7 @@ const TaskPreview = () => {
       task._id === taskId ? { ...task, starred: !task.starred } : task
     );
     setTasks(updatedTasks);
-    setFilteredTasks(updatedTasks);
+    setFilteredTasks(sortTasks(updatedTasks, sortType));
   };
 
   const handleDelete = async () => {
@@ -106,6 +131,24 @@ const TaskPreview = () => {
     navigate(`/tasks/${taskId}`); // Navigate to task details page
   };
 
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const roundToNearestMinute = (date) => {
+    const roundedDate = new Date(date);
+    roundedDate.setSeconds(0, 0); // Reset seconds and milliseconds to 0
+    return roundedDate.getTime();
+  };
+
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
@@ -113,15 +156,31 @@ const TaskPreview = () => {
       </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="flex items-center mb-4 border border-gray-300 rounded-lg" style={{ width: '400px' }}>
-        <FaSearch className="ml-3 text-gray-500" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleSearch}
-          placeholder="Search for tasks..."
-          className="flex-1 px-3 py-2 outline-none bg-transparent"
-        />
+      <div className="flex items-center mb-4 space-x-4">
+        <div className="flex items-center border border-gray-300 rounded-lg flex-1 max-w-xs">
+          <FaSearch className="ml-3 text-gray-500" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearch}
+            placeholder="Search for tasks..."
+            className="flex-1 px-3 py-2 outline-none bg-transparent"
+          />
+        </div>
+        <button
+          onClick={handleSort}
+          className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:text-indigo-600"
+        >
+          <FaSort className="text-lg" />
+          <span className="ml-2">
+            {" "}
+            {sortType === "updatedAt"
+              ? "Updated Time"
+              : sortType === "createdAt"
+              ? "Created Time"
+              : "Task Name"}
+          </span>
+        </button>
       </div>
 
       <div className="space-y-4">
@@ -169,6 +228,13 @@ const TaskPreview = () => {
               </div>
             </div>
             <p className="text-gray-500 text-sm">{task.description}</p>
+            <p className="text-gray-500 text-xs mt-2">
+              Created: {formatDate(task.createdAt)}
+              {roundToNearestMinute(task.createdAt) !==
+                roundToNearestMinute(task.updatedAt) && (
+                <> | Updated: {formatDate(task.updatedAt)}</>
+              )}
+            </p>
           </div>
         ))}
       </div>
