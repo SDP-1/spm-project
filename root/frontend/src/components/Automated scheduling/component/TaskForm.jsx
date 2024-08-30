@@ -8,9 +8,9 @@ const TaskForm = ({
   setTaskName,
   description,
   setDescription,
-  repositoris,
-  repository,
-  setRepository,
+  projects,
+  project,
+  setProject,
   disable,
 }) => (
   <>
@@ -53,17 +53,17 @@ const TaskForm = ({
         className="block text-gray-700 text-sm font-bold mb-2"
         htmlFor="dropdown"
       >
-        Select Repository
+        Select project
       </label>
       <select
         id="dropdown"
-        value={repository}
-        onChange={(e) => !disable && setRepository(e.target.value)}
+        value={project}
+        onChange={(e) => !disable && setProject(e.target.value)}
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10"
         disabled={disable}
       >
-        <option value="">Select repository</option>
-        {repositoris.map((item) => (
+        <option value="">Select project</option>
+        {projects.map((item) => (
           <option key={item} value={item}>
             {item}
           </option>

@@ -9,24 +9,31 @@ import ToolSelector from "../component/ToolSelector";
 import MetricSelector from "../component/MetricSelector";
 import SelectedMetricsTable from "../component/SelectedMetricsTable";
 import ErrorMessage from "../component/ErrorMessage";
+import TaskForm from "../component/TaskForm";
 
 const TaskDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
-  const [initialTask, setInitialTask] = useState(null); // Store initial task state
+  const [initialTask, setInitialTask] = useState(null);
   const [error, setError] = useState("");
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
+  const [project, setProject] = useState("");
+  const [projects, setProjects] = useState([
+    "Option 1",
+    "Option 2",
+    "Option 3",
+  ]); // Example project options
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
   const [specificDate, setSpecificDate] = useState("");
   const [selectedTools, setSelectedTools] = useState([]);
   const [toolMetrics, setToolMetrics] = useState({});
-  const [isEditing, setIsEditing] = useState(false); // State for editing
+  const [isEditing, setIsEditing] = useState(false);
   const [isConfirmingUpdate, setIsConfirmingUpdate] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false); // State to disable button during update
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -34,9 +41,10 @@ const TaskDetails = () => {
         const response = await axios.get(`/api/tasks/${id}`);
         const taskData = response.data;
         setTask(taskData);
-        setInitialTask(taskData); // Initialize the initial task state
+        setInitialTask(taskData);
         setTaskName(taskData.taskName);
         setDescription(taskData.description);
+        setProject(taskData.project || ""); // Set project from task data
         setRecurring(taskData.recurring);
         setFrequencyType(taskData.frequencyType || "Daily");
         setFrequencyValue(taskData.frequencyValue || 8);
@@ -58,11 +66,12 @@ const TaskDetails = () => {
 
   const handleUpdate = async () => {
     if (isConfirmingUpdate) {
-      setIsUpdating(true); // Disable button
+      setIsUpdating(true);
       try {
         await axios.put(`/api/tasks/${id}`, {
           taskName,
           description,
+          project, // Include project in update payload
           recurring,
           frequencyType,
           frequencyValue,
@@ -72,18 +81,18 @@ const TaskDetails = () => {
           selectedTools,
           toolMetrics,
         });
-        // Fetch the updated task details to show the updated information
+
         const updatedResponse = await axios.get(`/api/tasks/${id}`);
         const updatedTask = updatedResponse.data;
         setTask(updatedTask);
-        setInitialTask(updatedTask); // Update the initial task state
-        setIsEditing(false); // Exit editing mode
-        setIsConfirmingUpdate(false); // Reset confirming update state
+        setInitialTask(updatedTask);
+        setIsEditing(false);
+        setIsConfirmingUpdate(false);
       } catch (error) {
         console.error("Error updating task:", error);
         setError("Failed to update task");
       } finally {
-        setIsUpdating(false); // Re-enable button
+        setIsUpdating(false);
       }
     } else {
       setIsConfirmingUpdate(true);
@@ -97,7 +106,7 @@ const TaskDetails = () => {
     if (shouldDelete) {
       try {
         await axios.delete(`/api/tasks/${id}`);
-        navigate("/show-tasks"); // Redirect to show-tasks after deletion
+        navigate("/show-tasks");
       } catch (error) {
         console.error("Error deleting task:", error);
         setError("Failed to delete task");
@@ -106,10 +115,10 @@ const TaskDetails = () => {
   };
 
   const handleCancel = () => {
-    // Reset form fields to initial task values
     if (initialTask) {
       setTaskName(initialTask.taskName);
       setDescription(initialTask.description);
+      setProject(initialTask.project || "");
       setRecurring(initialTask.recurring);
       setFrequencyType(initialTask.frequencyType || "Daily");
       setFrequencyValue(initialTask.frequencyValue || 8);
@@ -178,27 +187,17 @@ const TaskDetails = () => {
 
         {error && <ErrorMessage error={error} />}
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">Task Name</label>
-          <input
-            type="text"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded"
-            disabled={!isEditing}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded"
-            rows="4"
-            disabled={!isEditing}
-          ></textarea>
-        </div>
+        {/* Replace individual inputs with TaskForm */}
+        <TaskForm
+          taskName={taskName}
+          setTaskName={setTaskName}
+          description={description}
+          setDescription={setDescription}
+          projects={projects}
+          project={project}
+          setProject={setProject}
+          disable={!isEditing}
+        />
 
         <SelectionMethod
           selectionMethod={recurring ? "Recurring" : "For Now"}
@@ -247,7 +246,10 @@ const TaskDetails = () => {
         <div className="text-sm text-gray-500 mb-4">
           <p>Created at: {new Date(task.createdAt).toLocaleString()}</p>
           <p>
-            Updated at: {isEditing ? new Date().toLocaleString() : new Date(task.updatedAt).toLocaleString()}
+            Updated at:{" "}
+            {isEditing
+              ? new Date().toLocaleString()
+              : new Date(task.updatedAt).toLocaleString()}
           </p>
         </div>
 

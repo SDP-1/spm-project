@@ -19,7 +19,7 @@ const taskSchema = new mongoose.Schema(
       enum: ["For Now", "Recurring"],
       default: "For Now",
     },
-    repository: { type: String },
+    project: { type: String },
     star: { type: Boolean, default: false },
     createdUser: { type: String },
   },
