@@ -73,16 +73,17 @@ router.put("/task/star/:id", async (req, res) => {
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
       { star },
-      { new: true } // Return the updated document
+      {
+        new: true, // Return the updated document
+        timestamps: false, // Disable the timestamps update
+      }
     );
 
     if (updatedTask) {
-      res
-        .status(200)
-        .json({
-          message: "Star status updated successfully!",
-          task: updatedTask,
-        });
+      res.status(200).json({
+        message: "Star status updated successfully!",
+        task: updatedTask,
+      });
     } else {
       res.status(404).json({ message: "Task not found" });
     }
