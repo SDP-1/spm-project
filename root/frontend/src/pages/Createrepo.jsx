@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaLock, FaUnlock } from 'react-icons/fa'; // Importing icons for public/private access
+import { FaLock, FaUnlock } from 'react-icons/fa';
 
 const Createrepo = () => {
   const [projectName, setProjectName] = useState('');
@@ -32,9 +32,9 @@ const Createrepo = () => {
         throw new Error('Failed to create project');
       }
 
-      const data = await response.json(); // Parse the JSON response
+      const data = await response.json();
       alert('Project created successfully!');
-      console.log(data); // This will log the response from the server
+      console.log(data);
 
       // Optionally clear the form
       setProjectName('');
@@ -49,11 +49,14 @@ const Createrepo = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Create Project</h1>
+    <div 
+      className="max-w-lg mx-auto p-6 bg-[#e6f3f8] shadow-md rounded-lg"
+      style={{ fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace' }}
+    >
+      <h1 className="text-3xl font-bold mb-6">Create Project</h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2" htmlFor="projectName">
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectName">
             Project Name
           </label>
           <input
@@ -61,28 +64,28 @@ const Createrepo = () => {
             id="projectName"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md"
             required
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2" htmlFor="projectDetails">
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectDetails">
             Project Description
           </label>
           <textarea
             id="projectDetails"
             value={projectDetails}
             onChange={(e) => setProjectDetails(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            rows="4"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            rows="6"
             required
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Access</label>
-          <div className="flex items-center space-x-4">
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2">Access</label>
+          <div className="flex items-center space-x-6">
             <div className="flex items-center">
               <input
                 type="radio"
@@ -92,7 +95,7 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(true)}
                 className="mr-2"
               />
-              <FaUnlock className="text-green-500" />
+              <FaUnlock />
               <label htmlFor="public" className="ml-2">Public</label>
             </div>
             <div className="flex items-center">
@@ -104,14 +107,14 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(false)}
                 className="mr-2"
               />
-              <FaLock className="text-red-500" />
+              <FaLock />
               <label htmlFor="private" className="ml-2">Private</label>
             </div>
           </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2" htmlFor="authorName">
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="authorName">
             Author Name
           </label>
           <input
@@ -119,13 +122,13 @@ const Createrepo = () => {
             id="authorName"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md"
             required
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2" htmlFor="authorEmail">
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="authorEmail">
             Author Email
           </label>
           <input
@@ -133,14 +136,14 @@ const Createrepo = () => {
             id="authorEmail"
             value={authorEmail}
             onChange={(e) => setAuthorEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600"
+          className="w-full px-4 py-3 bg-[#41889e] text-white font-bold rounded-md hover:bg-[#357a8d]"
         >
           Create Project
         </button>

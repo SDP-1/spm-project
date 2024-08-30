@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Newrepo from "./pages/Newrepo";
 import Createrepo from "./pages/Createrepo";
 import Displayproj from "./pages/Displayproj";
+import Repodashboard from "./pages/Repodashboard";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
             <Route path="/newrepo" element={<Newrepo />} />
             <Route path="/createrepo" element={<Createrepo />} />
             <Route path="/displayproj" element={<Displayproj/>} />
-           
+            <Route path="/repodashboard" element={<Repodashboard/>}/>
           </Routes>
         </main>
       </div>

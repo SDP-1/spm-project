@@ -17,7 +17,7 @@ const Newrepo = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-4 space-y-4 ">
+    <div className="min-h-screen flex flex-col items-center py-4 space-y-4">
       {/* Cloning Box */}
       <div className="w-1/2 bg-[#e0e0e0] p-4 border border-[#c0c0c0] rounded-md shadow-md flex items-center">
         <input
@@ -35,13 +35,22 @@ const Newrepo = () => {
           Clone Repository
         </button>
       </div>
-
+      <div className="w-1/2 mt-4 p-4 bg-gray-100  rounded-md">
+  <p>Select files to add to the SaaS tool</p>
+</div>
       {/* File Display Section */}
       <div className="w-1/2 mt-4">
         {files.length > 0 ? (
           files.map(file => (
-            <div key={file.sha} className="p-2 bg-white border border-gray-300 rounded-md mb-2">
-              <a href={file.html_url} target="_blank" rel="noopener noreferrer">{file.name}</a>
+            <div key={file.sha} className="flex items-center p-2 bg-white border border-gray-300 rounded-md mb-2">
+              <input
+                type="checkbox"
+                className="mr-2"
+                // Add logic to handle checkbox state here if needed
+              />
+              <a href={file.html_url} target="_blank" rel="noopener noreferrer" className="flex-grow">
+                {file.name}
+              </a>
             </div>
           ))
         ) : (
