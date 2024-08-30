@@ -3,7 +3,7 @@ const router = express.Router();
 const Task = require("../models/task");
 
 // Route to create a new task
-router.post("/tasks", async (req, res) => {
+router.post("/task/add", async (req, res) => {
   try {
     const taskData = req.body;
     const newTask = new Task(taskData);
@@ -27,7 +27,7 @@ router.get("/tasks", async (req, res) => {
 });
 
 // Route to get a specific task by ID
-router.get("/tasks/:id", async (req, res) => {
+router.get("/task/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
     const task = await Task.findById(taskId);
@@ -44,14 +44,18 @@ router.get("/tasks/:id", async (req, res) => {
 });
 
 // Route to update a task by ID
-router.put("/tasks/:id", async (req, res) => {
+router.put("/task/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
     const updatedTaskData = req.body;
-    const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, { new: true });
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, {
+      new: true,
+    });
 
     if (updatedTask) {
-      res.status(200).json({ message: "Task updated successfully!", task: updatedTask });
+      res
+        .status(200)
+        .json({ message: "Task updated successfully!", task: updatedTask });
     } else {
       res.status(404).json({ message: "Task not found" });
     }
@@ -61,8 +65,35 @@ router.put("/tasks/:id", async (req, res) => {
   }
 });
 
+router.put("/task/star/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { star } = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { star },
+      { new: true } // Return the updated document
+    );
+
+    if (updatedTask) {
+      res
+        .status(200)
+        .json({
+          message: "Star status updated successfully!",
+          task: updatedTask,
+        });
+    } else {
+      res.status(404).json({ message: "Task not found" });
+    }
+  } catch (error) {
+    console.error("Error updating star status:", error);
+    res.status(500).json({ message: "Failed to update star status" });
+  }
+});
+
 // Route to delete a task by ID
-router.delete("/tasks/:id", async (req, res) => {
+router.delete("/task/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
     const deletedTask = await Task.findByIdAndDelete(taskId);

@@ -38,7 +38,7 @@ const TaskDetails = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const response = await axios.get(`/api/tasks/${id}`);
+        const response = await axios.get(`/api/task/${id}`);
         const taskData = response.data;
         setTask(taskData);
         setInitialTask(taskData);
@@ -68,7 +68,7 @@ const TaskDetails = () => {
     if (isConfirmingUpdate) {
       setIsUpdating(true);
       try {
-        await axios.put(`/api/tasks/${id}`, {
+        await axios.put(`/api/task/${id}`, {
           taskName,
           description,
           project, // Include project in update payload
@@ -82,7 +82,7 @@ const TaskDetails = () => {
           toolMetrics,
         });
 
-        const updatedResponse = await axios.get(`/api/tasks/${id}`);
+        const updatedResponse = await axios.get(`/api/task/${id}`);
         const updatedTask = updatedResponse.data;
         setTask(updatedTask);
         setInitialTask(updatedTask);
@@ -105,8 +105,8 @@ const TaskDetails = () => {
     );
     if (shouldDelete) {
       try {
-        await axios.delete(`/api/tasks/${id}`);
-        navigate("/show-tasks");
+        await axios.delete(`/api/task/${id}`);
+        navigate("/task/showAll");
       } catch (error) {
         console.error("Error deleting task:", error);
         setError("Failed to delete task");
@@ -175,7 +175,9 @@ const TaskDetails = () => {
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg relative">
-        <h2 className="text-2xl font-bold text-indigo-700 mb-4">Task Details</h2>
+        <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+          Task Details
+        </h2>
         {!isEditing && (
           <Button
             onClick={() => setIsEditing(true)}
@@ -257,7 +259,9 @@ const TaskDetails = () => {
           <div className="flex justify-between items-center mt-4">
             <Button
               onClick={handleUpdate}
-              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center ${
+                isUpdating ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               disabled={isUpdating}
             >
               {isConfirmingUpdate ? (

@@ -10,10 +10,9 @@ function App() {
     <Router>
       <Sidebar>
         <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/add-task" element={<TaskSheduler />} />
-          <Route path="/show-tasks" element={<TaskPreview />} />
-          <Route path="/tasks/:id" element={<TaskDetails />} />
+          <Route path="/task/add" element={<TaskSheduler />} />
+          <Route path="/task/showAll" element={<TaskPreview />} />
+          <Route path="/task/:id" element={<TaskDetails />} />
         </Routes>
       </Sidebar>
     </Router>

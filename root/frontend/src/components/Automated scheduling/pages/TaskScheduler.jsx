@@ -22,9 +22,9 @@ const TaskScheduler = () => {
   const [error, setError] = useState("");
   const [project, setProject] = useState("");
   const [projects, setProjects] = useState([
-    "Option 1",
-    "Option 2",
-    "Option 3",
+    "Project 01",
+    "Project 02",
+    "Project 03",
   ]);
 
   const tools = [
@@ -124,7 +124,7 @@ const TaskScheduler = () => {
         project, // Include selected project in task data
       };
 
-      const response = await axios.post("/api/tasks", taskData);
+      const response = await axios.post("/api/task/add", taskData);
 
       if (response.status === 200) {
         alert("Task scheduled successfully!");

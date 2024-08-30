@@ -34,7 +34,10 @@ const TaskPreview = () => {
     const handleClickOutside = (event) => {
       // Iterate over each menuRef to check if the click is outside
       Object.keys(menuRefs.current).forEach((taskId) => {
-        if (menuRefs.current[taskId] && !menuRefs.current[taskId].contains(event.target)) {
+        if (
+          menuRefs.current[taskId] &&
+          !menuRefs.current[taskId].contains(event.target)
+        ) {
           setShowMenu(null); // Close the menu if clicking outside
         }
       });
@@ -78,12 +81,34 @@ const TaskPreview = () => {
     setSortType(newSortType);
   };
 
-  const toggleStar = (taskId) => {
+  const toggleStar = async (taskId) => {
+    // Optimistically update the UI before the API call
     const updatedTasks = tasks.map((task) =>
-      task._id === taskId ? { ...task, starred: !task.starred } : task
+      task._id === taskId ? { ...task, star: !task.star } : task
     );
     setTasks(updatedTasks);
     setFilteredTasks(sortTasks(updatedTasks, sortType));
+
+    try {
+      // Find the task to be updated
+      const taskToUpdate = tasks.find((task) => task._id === taskId);
+      const updatedStarStatus = !taskToUpdate.star;
+
+      // Send the update to the backend using the star update route
+      await axios.put(`/api/task/star/${taskId}`, { star: updatedStarStatus });
+
+      // If successful, no further action is needed since the UI is already updated optimistically
+    } catch (error) {
+      console.error("Error updating star status:", error);
+      setError("Failed to update star status");
+
+      // Revert the UI change in case of an error
+      const revertedTasks = tasks.map((task) =>
+        task._id === taskId ? { ...task, star: taskToUpdate.star } : task
+      );
+      setTasks(revertedTasks);
+      setFilteredTasks(sortTasks(revertedTasks, sortType));
+    }
   };
 
   const handleDelete = async (taskId) => {
@@ -93,7 +118,7 @@ const TaskPreview = () => {
 
     if (confirmDelete) {
       try {
-        await axios.delete(`/api/tasks/${taskId}`);
+        await axios.delete(`/api/task/${taskId}`);
         setTasks((prevTasks) =>
           prevTasks.filter((task) => task._id !== taskId)
         );
@@ -109,7 +134,7 @@ const TaskPreview = () => {
   };
 
   const handleShowDetails = (taskId) => {
-    navigate(`/tasks/${taskId}`); // Navigate to task details page
+    navigate(`/task/${taskId}`); // Navigate to task details page
   };
 
   // Helper function to format date
@@ -183,7 +208,7 @@ const TaskPreview = () => {
                 <button onClick={() => toggleStar(task._id)}>
                   <FaStar
                     className={`text-xl ${
-                      task.starred ? "text-yellow-500" : "text-gray-300"
+                      task.star ? "text-yellow-500" : "text-gray-300"
                     }`}
                   />
                 </button>
