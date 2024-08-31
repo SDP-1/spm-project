@@ -57,7 +57,7 @@ export default function Sidebar({ children }) {
               <SidebarItem
                 icon={<FaEnvelope />}
                 text="Messages"
-                to="/messages"
+                to="/analize/task/status"
               />
               <SidebarItem icon={<FaCog />} text="Settings" to="/settings" />
               <SidebarItem icon={<FaQuestionCircle />} text="Help" to="/help" />
