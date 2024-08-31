@@ -6,6 +6,7 @@ import Newrepo from "./pages/Newrepo";
 import Createrepo from "./pages/Createrepo";
 import Displayproj from "./pages/Displayproj";
 import Repodashboard from "./pages/Repodashboard";
+import AnalyticsChart from "./pages/AnalyticsChart";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/createrepo" element={<Createrepo />} />
             <Route path="/displayproj" element={<Displayproj/>} />
             <Route path="/repodashboard" element={<Repodashboard/>}/>
+            <Route path="/analytics" element={<AnalyticsChart/>}/>
           </Routes>
         </main>
       </div>

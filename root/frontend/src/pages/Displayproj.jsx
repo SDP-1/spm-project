@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEllipsisV, FaArrowRight, FaFilter, FaHeart } from 'react-icons/fa';
+import { FaEllipsisV, FaArrowRight, FaFilter, FaHeart, FaEdit } from 'react-icons/fa';
 
 const Displayproj = () => {
   const [projects, setProjects] = useState([]);
@@ -25,17 +25,16 @@ const Displayproj = () => {
       const response = await fetch(`http://localhost:5000/api/projects/${projectId}`, {
         method: 'DELETE',
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to delete project');
       }
-  
+
       setProjects(projects.filter(project => project._id !== projectId));
     } catch (error) {
       console.error('Error deleting project:', error);
     }
   };
-  
 
   const toggleDropdown = (index) => {
     setDropdownVisible(dropdownVisible === index ? null : index);
@@ -74,15 +73,19 @@ const Displayproj = () => {
               <p className="text-sm text-gray-600">{project.projectDetails}</p>
             </div>
             <div className="flex items-center space-x-4">
-            <a href="/newrepo"
-  className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
->
-  <span className="mr-2">Add Repository</span>
-  <FaArrowRight />
-</a>
-
+              <a href="/newrepo"
+                className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
+              >
+                <span className="mr-2">Add Repository</span>
+                <FaArrowRight />
+              </a>
+              <a href="/editproject" 
+                className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
+              >
+                <span className="mr-2">Edit</span>
+                <FaEdit />
+              </a>
               <FaHeart className="text-[#41889e] cursor-pointer" />
-
               <div className="relative">
                 <button
                   onClick={() => toggleDropdown(index)}
@@ -106,13 +109,13 @@ const Displayproj = () => {
         </div>
       ))}
 
-<a
-  href="/createrepo" // Path to the Createrepo component
-  className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
->
+      <a
+        href="/createrepo" // Path to the Createrepo component
+        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
+      >
         <div className="text-white text-xl font-bold">+</div>
         <span>Add New Project</span>
-        </a>
+      </a>
     </div>
   );
 };
