@@ -17,10 +17,6 @@ const StatusPage = () => {
   return (
     <div>
       <QualityGate />
-      <div className="p-6 bg-gray-100 min-h-screen">
-        <h1 className="text-2xl font-bold mb-6">Code Metrics</h1>
-        <Status data={metricsData} />
-      </div>
     </div>
   );
 };
