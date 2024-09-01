@@ -147,16 +147,10 @@ const TaskScheduler = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+      <h2 className="text-2xl font-bold text-black mb-4">
         Schedule a New Code Analysis Task
       </h2>
 
-      {/* <TaskForm
-        taskName={taskName}
-        setTaskName={setTaskName}
-        description={description}
-        setDescription={setDescription}
-      /> */}
       <TaskForm
         taskName={taskName}
         setTaskName={setTaskName}
@@ -210,7 +204,7 @@ const TaskScheduler = () => {
         <ErrorMessage error={error} />
         <Button
           onClick={scheduleTask}
-          className="bg-indigo-700 text-white font-bold py-2 px-4 hover:bg-indigo-800 mt-4"
+          className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e] mt-4"
         >
           Schedule Task
         </Button>

@@ -175,9 +175,7 @@ const TaskDetails = () => {
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg relative">
-        <h2 className="text-2xl font-bold text-indigo-700 mb-4">
-          Task Details
-        </h2>
+        <h2 className="text-2xl font-bold text-black mb-4">Task Details</h2>
         {!isEditing && (
           <Button
             onClick={() => setIsEditing(true)}

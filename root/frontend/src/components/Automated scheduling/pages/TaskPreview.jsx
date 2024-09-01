@@ -158,7 +158,7 @@ const TaskPreview = () => {
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-indigo-700">Scheduled Tasks</h2>
+        <h2 className="text-2xl font-bold text-black">Scheduled Tasks</h2>
       </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -175,7 +175,7 @@ const TaskPreview = () => {
         </div>
         <button
           onClick={handleSort}
-          className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:text-indigo-600"
+          className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:text-[#41889e]"
         >
           <FaSort className="text-lg" />
           <span className="ml-2">
@@ -195,13 +195,13 @@ const TaskPreview = () => {
             className="bg-white p-4 rounded-lg shadow-lg relative"
           >
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-indigo-700">
+              <h3 className="text-xl font-semibold text-[#41889e]">
                 {task.taskName}
               </h3>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handleShowDetails(task._id)}
-                  className="text-xs text-indigo-600 hover:underline"
+                  className="text-xs text-[#41889e] hover:underline"
                 >
                   Show more details
                 </button>

@@ -25,7 +25,7 @@ const QualityGate = ({ statsData }) => {
         <h2 className="text-xl font-semibold mr-4">Quality Gate</h2>
         <p className="bg-green-100 text-green-600 py-1 px-3 rounded">Passed</p>
       </div>
-      <nav className="flex space-x-4 text-blue-500">
+      <nav className="flex space-x-4 text-[#41889e]">
         <a
           href="#"
           onClick={() => handleTabClick("fileByFile")}

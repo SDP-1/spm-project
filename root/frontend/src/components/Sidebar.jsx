@@ -54,11 +54,6 @@ export default function Sidebar({ children }) {
                 to="/notifications"
                 alert
               />
-              <SidebarItem
-                icon={<FaEnvelope />}
-                text="Messages"
-                to="/analize/task/status"
-              />
               <SidebarItem icon={<FaCog />} text="Settings" to="/settings" />
               <SidebarItem icon={<FaQuestionCircle />} text="Help" to="/help" />
               <SidebarItem icon={<MdTask />} text="AddTask" to="/task/add" />
@@ -66,6 +61,11 @@ export default function Sidebar({ children }) {
                 icon={<FaTasks />}
                 text="ShowAllTasks"
                 to="/task/showAll"
+              />
+              <SidebarItem
+                icon={<FaEnvelope />}
+                text="Quality Gate"
+                to="/analize/task/status"
               />
               <SidebarItem
                 icon={<FaSignOutAlt />}
