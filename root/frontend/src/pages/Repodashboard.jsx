@@ -83,12 +83,12 @@ const Repodashboard = () => {
                             <p className="text-sm text-gray-600">{project.projectDetails}</p>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <a href="/newrepo"
+                            {/* <a href="/newrepo"
                                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
                             >
                                 <span className="mr-2">Add Repository</span>
                                 <FaArrowRight />
-                            </a>
+                            </a> */}
 
                             <FaHeart className="text-[#41889e] cursor-pointer" />
 
