@@ -19,9 +19,28 @@ const Newrepo = () => {
       console.error('Error fetching repository files:', error);
     }
   };
- const handleAddToProject = () => {
-    navigate('/repodashboard'); // Navigate to /repodashboard
+
+  const handleAddToProject = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/github/save-to-firebase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ files }), // Send the files array to the backend
+      });
+
+      if (response.ok) {
+        console.log('Files saved to Firebase successfully');
+        navigate('/repodashboard'); // Navigate to /repodashboard
+      } else {
+        console.error('Failed to save files to Firebase');
+      }
+    } catch (error) {
+      console.error('Error saving files to Firebase:', error);
+    }
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center py-4 space-y-4">
       {/* Cloning Box */}
@@ -58,9 +77,9 @@ const Newrepo = () => {
             ))}
             {repoCloned && (
               <button
-              onClick={handleAddToProject} // Set onClick handler to navigate
-              className="bg-[#41889e] text-white p-2 rounded-md hover:bg-[#357a8d] mt-4 flex items-center"
-            >
+                onClick={handleAddToProject} // Set onClick handler to navigate
+                className="bg-[#41889e] text-white p-2 rounded-md hover:bg-[#357a8d] mt-4 flex items-center"
+              >
                 Add To Project
               </button>
             )}
