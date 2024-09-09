@@ -1,9 +1,7 @@
-// backend/src/routers/githubRoutes.js
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// Helper function to convert .git URL to API path
 const getApiPathFromUrl = (url) => {
   const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)\.git/);
   if (match) {
@@ -12,9 +10,9 @@ const getApiPathFromUrl = (url) => {
   return null;
 };
 
-// Route to fetch repository files from GitHub
 router.get('/repo-files', async (req, res) => {
   const { repoUrl } = req.query;
+  const token = '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'; // Add your GitHub token here
 
   if (!repoUrl) {
     return res.status(400).json({ message: 'Repository URL is required' });
@@ -27,9 +25,13 @@ router.get('/repo-files', async (req, res) => {
   }
 
   try {
-    const response = await axios.get(apiUrl);
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
     const files = response.data;
-
     res.status(200).json(files);
   } catch (error) {
     console.error('Error fetching repository files:', error);
