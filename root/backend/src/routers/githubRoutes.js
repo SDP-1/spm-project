@@ -4,7 +4,6 @@ const axios = require('axios');
 const admin = require('firebase-admin');
 const path = require('path');
 
-
 // Initialize Firebase Admin
 const serviceAccountPath = path.resolve('E:/SPM/JSON/repository-fab74-firebase-adminsdk-qojz1-7280c2c782.json');
 
@@ -54,7 +53,7 @@ router.get('/repo-files', async (req, res) => {
 
 // Route to save files to Firebase Storage
 router.post('/save-to-firebase', async (req, res) => {
-  const { files } = req.body; // Array of files to upload
+  const { files, repoName } = req.body; // Array of files and repository name to upload
   const token = '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'; // Replace with your GitHub token
 
   try {
@@ -69,8 +68,8 @@ router.post('/save-to-firebase', async (req, res) => {
 
       const buffer = Buffer.from(fileResponse.data, 'utf-8');
 
-      // Upload to Firebase Storage
-      const fileUpload = bucket.file(file.path);
+      // Upload to Firebase Storage using repository name as part of the path
+      const fileUpload = bucket.file(`${repoName}/${file.path}`);
       await fileUpload.save(buffer, {
         metadata: { contentType: file.type },
       });

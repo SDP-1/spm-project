@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaClone } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const Newrepo = () => {
   const [repoUrl, setRepoUrl] = useState('');
@@ -22,12 +22,16 @@ const Newrepo = () => {
 
   const handleAddToProject = async () => {
     try {
+      // Extract repository name from the URL for Firebase Storage path
+      const repoNameMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)\.git/);
+      const repoName = repoNameMatch ? repoNameMatch[2] : 'unknown';
+
       const response = await fetch('http://localhost:5000/api/github/save-to-firebase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ files }), // Send the files array to the backend
+        body: JSON.stringify({ files, repoName }), // Send the files array and repository name to the backend
       });
 
       if (response.ok) {
