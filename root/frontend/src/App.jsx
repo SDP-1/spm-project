@@ -28,6 +28,7 @@ function App() {
             <Route path="/displayproj" element={<Displayproj/>} />
             <Route path="/repodashboard" element={<Repodashboard/>}/>
             <Route path="/analytics" element={<AnalyticsChart/>}/>
+            
           </Routes>
         </main>
       </div>

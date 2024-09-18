@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaClone } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import DragAndDrop from './DragAndDrop';
 const Newrepo = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [files, setFiles] = useState([]);
@@ -91,6 +91,9 @@ const Newrepo = () => {
         ) : (
           <p>No files to display</p>
         )}
+      </div>
+      <div>
+        <DragAndDrop/>
       </div>
     </div>
   );
