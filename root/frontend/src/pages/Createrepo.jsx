@@ -6,7 +6,7 @@ const Createrepo = () => {
   const [projectDetails, setProjectDetails] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [authorName, setAuthorName] = useState('');
-  const [authorEmail, setAuthorEmail] = useState('');
+  const [repositoryName, setRepositoryName] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +16,7 @@ const Createrepo = () => {
       projectDetails,
       access: isPublic ? 'Public' : 'Private',
       authorName,
-      authorEmail,
+      repositoryName,
     };
 
     try {
@@ -41,7 +41,7 @@ const Createrepo = () => {
       setProjectDetails('');
       setIsPublic(true);
       setAuthorName('');
-      setAuthorEmail('');
+      setRepositoryName('');
     } catch (error) {
       alert('Failed to create the project.');
       console.error('There was an error creating the project!', error);
@@ -128,14 +128,14 @@ const Createrepo = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="authorEmail">
-            Author Email
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="repositoryName">
+            Repository Name
           </label>
           <input
-            type="email"
-            id="authorEmail"
-            value={authorEmail}
-            onChange={(e) => setAuthorEmail(e.target.value)}
+            type="text"
+            id="repositoryName"
+            value={repositoryName}
+            onChange={(e) => setRepositoryName(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-md"
             required
           />

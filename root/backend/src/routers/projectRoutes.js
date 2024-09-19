@@ -6,6 +6,15 @@ const Project = require('../models/project'); // Adjust path if necessary
 router.post('/', async (req, res) => {
   try {
     const projectData = req.body;
+
+    // Validate required fields
+    const requiredFields = ['projectName', 'projectDetails', 'access', 'authorName', 'repositoryName'];
+    for (const field of requiredFields) {
+      if (!projectData[field]) {
+        return res.status(400).json({ message: `${field} is required` });
+      }
+    }
+
     const newProject = new Project(projectData);
     await newProject.save();
     res.status(200).json({ message: 'Project created successfully!' });

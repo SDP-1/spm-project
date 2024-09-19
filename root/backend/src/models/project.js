@@ -6,7 +6,7 @@ const projectSchema = new mongoose.Schema({
   projectDetails: { type: String, required: true },
   access: { type: String, enum: ['Public', 'Private'], required: true },
   authorName: { type: String, required: true },
-  authorEmail: { type: String, required: true },
+  repositoryName: { type: String, required: true }, // Changed from authorEmail to repositoryName
 });
 
 const Project = mongoose.model('Project', projectSchema);
