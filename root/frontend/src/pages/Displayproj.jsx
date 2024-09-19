@@ -71,6 +71,7 @@ const Displayproj = () => {
             <div>
               <h2 className="text-xl font-bold">{project.projectName}</h2>
               <p className="text-sm text-gray-600">{project.projectDetails}</p>
+              <p className="text-sm text-gray-500 mt-2"><strong>Repository Name:</strong> {project.repositoryName}</p>
             </div>
             <div className="flex items-center space-x-4">
               <a href="/newrepo"
