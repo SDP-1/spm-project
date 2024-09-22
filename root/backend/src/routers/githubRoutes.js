@@ -7,7 +7,7 @@ const Project = require("../models/project"); // Import the MongoDB model
 
 // Initialize Firebase Admin (Firestore and Storage)
 const serviceAccountPath = path.resolve(
-  "E:/SPM/JSON/repository-fab74-firebase-adminsdk-qojz1-7280c2c782.json"
+  "src/repository-fab74-firebase-adminsdk-qojz1-7280c2c782.json"
 );
 
 admin.initializeApp({
