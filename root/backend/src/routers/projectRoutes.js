@@ -53,4 +53,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Route to get project by ID
+router.get("/projects/:id", async (req, res) => {
+  try {
+    const projectId = req.params.id; // Extract project ID from the URL
+
+    const project = await Project.findById(projectId); // Fetch project by ID
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    res.status(200).json(project);
+  } catch (error) {
+    console.error("Error fetching project by ID:", error);
+    res.status(500).json({ message: "Failed to fetch project" });
+  }
+});
+
 module.exports = router;

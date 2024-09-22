@@ -23,12 +23,11 @@ function App() {
                 </div>
               }
             />
-            <Route path="/newrepo" element={<Newrepo />} />
+            <Route path="/newrepo/:projectId" element={<Newrepo />} />
             <Route path="/createrepo" element={<Createrepo />} />
-            <Route path="/displayproj" element={<Displayproj/>} />
-            <Route path="/repodashboard" element={<Repodashboard/>}/>
-            <Route path="/analytics" element={<AnalyticsChart/>}/>
-            
+            <Route path="/displayproj" element={<Displayproj />} />
+            <Route path="/repodashboard" element={<Repodashboard />} />
+            <Route path="/analytics" element={<AnalyticsChart />} />
           </Routes>
         </main>
       </div>

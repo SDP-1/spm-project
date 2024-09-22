@@ -1,53 +1,76 @@
-import React, { useState } from 'react';
-import { FaClone } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { FaClone } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Newrepo = () => {
-  const [repoUrl, setRepoUrl] = useState('');
+  const [repoUrl, setRepoUrl] = useState("");
   const [files, setFiles] = useState([]);
-  const [repoCloned, setRepoCloned] = useState(false); // New state to track if repo is cloned
+  const [repoCloned, setRepoCloned] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { projectId } = useParams(); // Retrieve projectId from URL
 
   const handleClone = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const encodedUrl = encodeURIComponent(repoUrl);
-      const response = await fetch(`http://localhost:5000/api/github/repo-files?repoUrl=${encodedUrl}`);
+      const response = await fetch(
+        `http://localhost:5000/api/github/repo-files?repoUrl=${encodedUrl}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch repository files");
+      }
       const data = await response.json();
-      setFiles(data); // Set the files in the state
-      setRepoCloned(true); // Set repoCloned to true when repo is cloned
+      setFiles(data);
+      setRepoCloned(true);
     } catch (error) {
-      console.error('Error fetching repository files:', error);
+      setError(
+        "Error fetching repository files. Please check the repository URL."
+      );
+      console.error("Error fetching repository files:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddToProject = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      // Extract repository name from the URL for Firebase Storage path
-      const repoNameMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)\.git/);
-      const repoName = repoNameMatch ? repoNameMatch[2] : 'unknown';
+      const repoNameMatch = repoUrl.match(
+        /github\.com\/([^\/]+)\/([^\/]+)\.git/
+      );
+      const repoName = repoNameMatch ? repoNameMatch[2] : "unknown";
 
-      const response = await fetch('http://localhost:5000/api/github/save-to-firebase', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ files, repoName }), // Send the files array and repository name to the backend
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/github/save-to-firebase",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ files, repoName, projectId }), // Use projectId
+        }
+      );
 
       if (response.ok) {
-        console.log('Files saved to Firebase successfully');
-        navigate('/repodashboard'); // Navigate to /repodashboard
+        console.log("Files saved to Firebase and repository URL updated");
+        navigate("/repodashboard");
       } else {
-        console.error('Failed to save files to Firebase');
+        throw new Error("Failed to save files to Firebase");
       }
     } catch (error) {
-      console.error('Error saving files to Firebase:', error);
+      setError("Error saving files to Firebase. Please try again.");
+      console.error("Error saving files to Firebase:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center py-4 space-y-4">
-      {/* Cloning Box */}
       <div className="w-1/2 bg-[#e0e0e0] p-4 border border-[#c0c0c0] rounded-md shadow-md flex items-center">
         <input
           type="text"
@@ -59,32 +82,47 @@ const Newrepo = () => {
         <button
           onClick={handleClone}
           className="bg-[#41889e] text-white p-2 rounded-r-md hover:bg-[#357a8d] flex items-center"
+          disabled={loading}
         >
           <FaClone className="mr-2" />
-          Clone Repository
+          {loading ? "Cloning..." : "Clone Repository"}
         </button>
       </div>
 
-      {/* File Display Section */}
+      {error && (
+        <div className="w-1/2 p-4 bg-red-100 border border-red-300 text-red-800 rounded-md">
+          {error}
+        </div>
+      )}
+
       <div className="w-1/2 mt-4">
         {files.length > 0 ? (
           <>
             <div className="p-4 bg-gray-100 rounded-md">
               <p>Files</p>
             </div>
-            {files.map(file => (
-              <div key={file.sha} className="flex items-center p-2 bg-white border border-gray-300 rounded-md mb-2">
-                <a href={file.html_url} target="_blank" rel="noopener noreferrer" className="flex-grow">
+            {files.map((file) => (
+              <div
+                key={file.sha}
+                className="flex items-center p-2 bg-white border border-gray-300 rounded-md mb-2"
+              >
+                <a
+                  href={file.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-grow"
+                >
                   {file.name}
                 </a>
               </div>
             ))}
             {repoCloned && (
               <button
-                onClick={handleAddToProject} // Set onClick handler to navigate
+                onClick={handleAddToProject}
                 className="bg-[#41889e] text-white p-2 rounded-md hover:bg-[#357a8d] mt-4 flex items-center"
+                disabled={loading}
               >
-                Add To Project
+                {loading ? "Adding..." : "Add To Project"}
               </button>
             )}
           </>
@@ -92,7 +130,6 @@ const Newrepo = () => {
           <p>No files to display</p>
         )}
       </div>
-     
     </div>
   );
 };
