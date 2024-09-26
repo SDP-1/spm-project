@@ -68,6 +68,21 @@ export default function Sidebar({ children }) {
                 to="/analize/task/status"
               />
               <SidebarItem
+                icon={<FaEnvelope />}
+                text="Create Project"
+                to="/createrepo"
+              />
+              <SidebarItem
+                icon={<FaEnvelope />}
+                text="Display Projects"
+                to="/displayproj"
+              />
+              <SidebarItem
+                icon={<FaEnvelope />}
+                text="Repo DashBoard"
+                to="/repodashboard"
+              />
+              <SidebarItem
                 icon={<FaSignOutAlt />}
                 text="LogOut"
                 to="/log-out"
