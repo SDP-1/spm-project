@@ -50,13 +50,13 @@ const Createrepo = () => {
 
   return (
     <div 
-      className="max-w-lg mx-auto p-6 bg-[#e6f3f8] shadow-md rounded-lg"
-      style={{ fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace' }}
+      className="max-w-lg mx-auto p-8 bg-[#f0f4f8] shadow-lg rounded-lg border border-gray-300"
+      style={{ fontFamily: 'Inter, sans-serif' }} // Using a modern sans-serif font
     >
-      <h1 className="text-3xl font-bold mb-6">Create Project</h1>
+      <h1 className="text-3xl font-semibold mb-6 text-gray-800">Create Project</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectName">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="projectName">
             Project Name
           </label>
           <input
@@ -64,27 +64,27 @@ const Createrepo = () => {
             id="projectName"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#41889e]"
             required
           />
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectDetails">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="projectDetails">
             Project Description
           </label>
           <textarea
             id="projectDetails"
             value={projectDetails}
             onChange={(e) => setProjectDetails(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#41889e]"
             rows="6"
             required
           />
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2">Access</label>
+          <label className="block text-gray-700 font-medium mb-2">Access</label>
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
               <input
@@ -95,8 +95,8 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(true)}
                 className="mr-2"
               />
-              <FaUnlock />
-              <label htmlFor="public" className="ml-2">Public</label>
+              <FaUnlock className="text-[#41889e]" />
+              <label htmlFor="public" className="ml-2 text-gray-700">Public</label>
             </div>
             <div className="flex items-center">
               <input
@@ -107,14 +107,14 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(false)}
                 className="mr-2"
               />
-              <FaLock />
-              <label htmlFor="private" className="ml-2">Private</label>
+              <FaLock className="text-[#41889e]" />
+              <label htmlFor="private" className="ml-2 text-gray-700">Private</label>
             </div>
           </div>
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="authorName">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="authorName">
             Author Name
           </label>
           <input
@@ -122,13 +122,13 @@ const Createrepo = () => {
             id="authorName"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#41889e]"
             required
           />
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="repositoryName">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="repositoryName">
             Repository Name
           </label>
           <input
@@ -136,14 +136,14 @@ const Createrepo = () => {
             id="repositoryName"
             value={repositoryName}
             onChange={(e) => setRepositoryName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#41889e]"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full px-4 py-3 bg-[#41889e] text-white font-bold rounded-md hover:bg-[#357a8d]"
+          className="w-full px-4 py-3 bg-[#41889e] text-white font-bold rounded-md hover:bg-[#357a8d] transition duration-200"
         >
           Create Project
         </button>
