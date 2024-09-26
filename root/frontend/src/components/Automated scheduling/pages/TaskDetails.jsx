@@ -19,8 +19,8 @@ const TaskDetails = () => {
   const [error, setError] = useState("");
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
-  const [projectId, setProjectId] = useState(""); // Change to store project ID
-  const [projects, setProjects] = useState([]); // Initialize as an empty array
+  const [projectId, setProjectId] = useState("");
+  const [projects, setProjects] = useState([]);
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
@@ -40,7 +40,7 @@ const TaskDetails = () => {
         setInitialTask(taskData);
         setTaskName(taskData.taskName);
         setDescription(taskData.description);
-        setProjectId(taskData.projectId || ""); // Set project ID from task data
+        setProjectId(taskData.projectId || "");
         setRecurring(taskData.recurring);
         setFrequencyType(taskData.frequencyType || "Daily");
         setFrequencyValue(taskData.frequencyValue || 8);
@@ -59,8 +59,8 @@ const TaskDetails = () => {
 
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`/api/projects`); // Fetch projects from your API
-        setProjects(response.data); // Assuming response.data is an array of project objects
+        const response = await axios.get(`/api/projects`);
+        setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
         setError("Failed to fetch projects");
@@ -68,7 +68,7 @@ const TaskDetails = () => {
     };
 
     fetchTask();
-    fetchProjects(); // Call the fetchProjects function to get the project list
+    fetchProjects();
   }, [id]);
 
   const handleUpdate = async () => {
@@ -78,7 +78,7 @@ const TaskDetails = () => {
         await axios.put(`/api/task/${id}`, {
           taskName,
           description,
-          projectId, // Include project ID in update payload
+          projectId,
           recurring,
           frequencyType,
           frequencyValue,
@@ -125,7 +125,7 @@ const TaskDetails = () => {
     if (initialTask) {
       setTaskName(initialTask.taskName);
       setDescription(initialTask.description);
-      setProjectId(initialTask.projectId || ""); // Reset project ID
+      setProjectId(initialTask.projectId || "");
       setRecurring(initialTask.recurring);
       setFrequencyType(initialTask.frequencyType || "Daily");
       setFrequencyValue(initialTask.frequencyValue || 8);
@@ -179,34 +179,32 @@ const TaskDetails = () => {
     }));
   };
 
-  // Find the selected project name based on projectId
   const selectedProject = projects.find((proj) => proj.id === projectId);
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
-      <div className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg relative">
-        <h2 className="text-2xl font-bold text-black mb-4">Task Details</h2>
+      <div className="container mx-auto max-w-full p-6 rounded-lg shadow-lg bg-white">
+        <h2 className="text-3xl font-bold text-black mb-6">Task Details</h2>
         {!isEditing && (
           <Button
             onClick={() => setIsEditing(true)}
-            className="absolute top-4 right-4 text-black bg-transparent border border-black px-2 py-1 rounded-lg hover:bg-gray-200 flex items-center"
+            className="absolute top-14 right-14 text-black bg-transparent border border-black px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center"
           >
-            <FaEdit className="mr-1" /> Edit
+            <FaEdit className="mr-2" /> Edit
           </Button>
         )}
 
         {error && <ErrorMessage error={error} />}
 
-        {/* Replace individual inputs with TaskForm */}
         <TaskForm
           taskName={taskName}
           setTaskName={setTaskName}
           description={description}
           setDescription={setDescription}
-          projects={projects} // Pass projects array
-          project={projectId} // Pass the project ID
-          setProject={setProjectId} // Update project ID on change
-          selectedProjectName={selectedProject ? selectedProject.name : ""} // Pass the selected project name
+          projects={projects}
+          project={projectId}
+          setProject={setProjectId}
+          selectedProjectName={selectedProject ? selectedProject.name : ""}
           disable={!isEditing}
         />
 
@@ -254,7 +252,7 @@ const TaskDetails = () => {
           </>
         )}
 
-        <div className="text-sm text-gray-500 mb-4">
+        <div className="text-sm text-gray-500 mb-4 mt-6">
           <p>Created at: {new Date(task.createdAt).toLocaleString()}</p>
           <p>
             Updated at:{" "}
@@ -265,7 +263,7 @@ const TaskDetails = () => {
         </div>
 
         {isEditing && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-6">
             <Button
               onClick={handleUpdate}
               className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center ${
@@ -293,7 +291,7 @@ const TaskDetails = () => {
         )}
 
         {!isEditing && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-6">
             <Button
               onClick={handleDelete}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center"

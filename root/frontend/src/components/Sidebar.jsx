@@ -114,7 +114,7 @@ export default function Sidebar({ children }) {
       <main
         className={`flex-1 transition-all duration-300 ${
           expanded ? "ml-[250px]" : "ml-[80px]"
-        } p-4 bg-gray-100`}
+        } bg-gray-100`}
       >
         {children}
       </main>
