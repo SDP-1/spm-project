@@ -20,6 +20,7 @@ const taskSchema = new mongoose.Schema(
       default: "For Now",
     },
     project: { type: String },
+    projectId:{type:String},
     star: { type: Boolean, default: false },
     createdUser: { type: String },
   },

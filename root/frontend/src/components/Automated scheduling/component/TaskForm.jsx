@@ -1,5 +1,3 @@
-// TaskForm.jsx
-
 import React from "react";
 import { FaChevronDown } from "react-icons/fa"; // Import the dropdown icon
 
@@ -64,13 +62,12 @@ const TaskForm = ({
       >
         <option value="">Select project</option>
         {projects.map((item) => (
-          <option key={item} value={item}>
-            {item}
+          <option key={item._id} value={item._id}>
+            {item.projectName} {/* Display the project name */}
           </option>
         ))}
       </select>
       <FaChevronDown className="absolute right-3 top-2/3 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
-      
     </div>
   </>
 );

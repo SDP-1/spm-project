@@ -19,12 +19,8 @@ const TaskDetails = () => {
   const [error, setError] = useState("");
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
-  const [project, setProject] = useState("");
-  const [projects, setProjects] = useState([
-    "Option 1",
-    "Option 2",
-    "Option 3",
-  ]); // Example project options
+  const [projectId, setProjectId] = useState(""); // Change to store project ID
+  const [projects, setProjects] = useState([]); // Initialize as an empty array
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
@@ -44,7 +40,7 @@ const TaskDetails = () => {
         setInitialTask(taskData);
         setTaskName(taskData.taskName);
         setDescription(taskData.description);
-        setProject(taskData.project || ""); // Set project from task data
+        setProjectId(taskData.projectId || ""); // Set project ID from task data
         setRecurring(taskData.recurring);
         setFrequencyType(taskData.frequencyType || "Daily");
         setFrequencyValue(taskData.frequencyValue || 8);
@@ -61,7 +57,18 @@ const TaskDetails = () => {
       }
     };
 
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get(`/api/projects`); // Fetch projects from your API
+        setProjects(response.data); // Assuming response.data is an array of project objects
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setError("Failed to fetch projects");
+      }
+    };
+
     fetchTask();
+    fetchProjects(); // Call the fetchProjects function to get the project list
   }, [id]);
 
   const handleUpdate = async () => {
@@ -71,7 +78,7 @@ const TaskDetails = () => {
         await axios.put(`/api/task/${id}`, {
           taskName,
           description,
-          project, // Include project in update payload
+          projectId, // Include project ID in update payload
           recurring,
           frequencyType,
           frequencyValue,
@@ -118,7 +125,7 @@ const TaskDetails = () => {
     if (initialTask) {
       setTaskName(initialTask.taskName);
       setDescription(initialTask.description);
-      setProject(initialTask.project || "");
+      setProjectId(initialTask.projectId || ""); // Reset project ID
       setRecurring(initialTask.recurring);
       setFrequencyType(initialTask.frequencyType || "Daily");
       setFrequencyValue(initialTask.frequencyValue || 8);
@@ -172,6 +179,9 @@ const TaskDetails = () => {
     }));
   };
 
+  // Find the selected project name based on projectId
+  const selectedProject = projects.find((proj) => proj.id === projectId);
+
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg relative">
@@ -193,9 +203,10 @@ const TaskDetails = () => {
           setTaskName={setTaskName}
           description={description}
           setDescription={setDescription}
-          projects={projects}
-          project={project}
-          setProject={setProject}
+          projects={projects} // Pass projects array
+          project={projectId} // Pass the project ID
+          setProject={setProjectId} // Update project ID on change
+          selectedProjectName={selectedProject ? selectedProject.name : ""} // Pass the selected project name
           disable={!isEditing}
         />
 

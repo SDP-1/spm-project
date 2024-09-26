@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../component/Button";
 import TaskForm from "../component/TaskForm";
 import SelectionMethod from "../component/SelectionMethod";
@@ -20,12 +20,9 @@ const TaskScheduler = () => {
   const [specificDate, setSpecificDate] = useState("");
   const [selectionMethod, setSelectionMethod] = useState("For Now");
   const [error, setError] = useState("");
-  const [project, setProject] = useState("");
-  const [projects, setProjects] = useState([
-    "Project 01",
-    "Project 02",
-    "Project 03",
-  ]);
+  const [project, setProject] = useState(""); // Project name selected
+  const [projectId, setProjectId] = useState(""); // Store projectId separately
+  const [projects, setProjects] = useState([]); // To store fetched projects
 
   const tools = [
     {
@@ -35,6 +32,20 @@ const TaskScheduler = () => {
     { name: "Halstead Metrics", metrics: ["Volume", "Difficulty", "Effort"] },
     { name: "Maintainability Index", metrics: ["Maintainability Index"] },
   ];
+
+  // Fetch real projects from the database on component mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get("/api/projects"); // Adjust the endpoint if necessary
+        setProjects(response.data); // Assuming response contains an array of projects with { _id, projectName }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const handleToolSelection = (tool) => {
     setSelectedTools((prev) => {
@@ -83,6 +94,11 @@ const TaskScheduler = () => {
     setError("");
   };
 
+  const handleProjectSelection = (projectId, projectName) => {
+    setProjectId(projectId); // Set projectId
+    setProject(projectName); // Set projectName (to show in the form)
+  };
+
   const scheduleTask = async () => {
     if (!taskName) {
       setError("Task name is required.");
@@ -92,8 +108,8 @@ const TaskScheduler = () => {
       setError("Description is required.");
       return;
     }
-    if (!project) {
-      setError("project is required.");
+    if (!projectId) {
+      setError("Project is required.");
       return;
     }
     if (selectedTools.length === 0) {
@@ -121,7 +137,7 @@ const TaskScheduler = () => {
         frequencyValue,
         specificDate,
         selectionMethod,
-        project, // Include selected project in task data
+        projectId,
       };
 
       const response = await axios.post("/api/task/add", taskData);
@@ -138,6 +154,7 @@ const TaskScheduler = () => {
         setSpecificDate("");
         setSelectionMethod("For Now");
         setProject("");
+        setProjectId(""); // Clear the projectId as well
       }
     } catch (error) {
       console.error("Error scheduling task:", error);
@@ -156,9 +173,9 @@ const TaskScheduler = () => {
         setTaskName={setTaskName}
         description={description}
         setDescription={setDescription}
-        projects={projects}
-        project={project}
-        setProject={setProject}
+        projects={projects} // Pass fetched projects to TaskForm
+        project={project} // Pass selected project name
+        setProject={handleProjectSelection} // Update selection handler
         disable={false} // Adjust as needed
       />
 
