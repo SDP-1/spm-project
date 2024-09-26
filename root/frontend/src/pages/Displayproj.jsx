@@ -161,6 +161,18 @@ const Displayproj = () => {
               <p className="text-sm text-gray-500 mt-2">
                 <strong>Repository Name:</strong> {project.repositoryName}
               </p>
+             
+              <p className="text-sm text-gray-500 mt-2">
+  <strong>Repository URL:</strong> {project.repositoryUrl ? (
+    project.repositoryUrl // Display the URL as plain text
+  ) : (
+    <span className="text-red-400">No repo cloned</span> // Apply light red color
+  )}
+</p>
+
+
+  
+
             </div>
             <div className="flex items-center space-x-4">
               <a
