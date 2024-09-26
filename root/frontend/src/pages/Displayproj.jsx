@@ -15,6 +15,9 @@ const Displayproj = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [files, setFiles] = useState([]);
   const [repoName, setRepoName] = useState("");
+  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+  const [editedProject, setEditedProject] = useState({ projectName: "", projectDetails: "", repositoryName: "" }); // State for edited project
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
@@ -82,6 +85,50 @@ const Displayproj = () => {
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleEditClick = (project) => {
+    setEditedProject({
+      projectName: project.projectName,
+      projectDetails: project.projectDetails,
+      repositoryName: project.repositoryName,
+    });
+    setSelectedProjectId(project._id);
+    setModalVisible(true); // Show the modal
+    setErrorMessage(""); // Reset error message
+  };
+
+  const handleUpdateProject = async () => {
+    console.log("Updating project with data:", editedProject);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/projects/${selectedProjectId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editedProject),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update project");
+      }
+
+      // Update the projects state with the updated project
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === selectedProjectId ? { ...project, ...editedProject } : project
+        )
+      );
+
+      setModalVisible(false); // Close the modal
+    } catch (error) {
+      console.error("Error updating project:", error);
+      setErrorMessage(error.message); // Set the error message
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 relative">
       <div className="flex mb-4 space-x-4 items-center">
@@ -124,7 +171,7 @@ const Displayproj = () => {
                 <FaArrowRight />
               </a>
               <a
-                href="/editproject"
+                onClick={() => handleEditClick(project)} // Show modal on click
                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
               >
                 <span className="mr-2">Edit</span>
@@ -140,11 +187,10 @@ const Displayproj = () => {
                 </button>
                 {dropdownVisible === index && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
-                    <button
+                    {/* <button
                       onClick={() => {
                         setSelectedProjectId(project._id);
                         setRepoName(project.repositoryName);
-                        // Mock files array, replace with actual file fetching logic
                         const mockFiles = [
                           {
                             download_url: "https://example.com/file1",
@@ -167,7 +213,7 @@ const Displayproj = () => {
                       className="block px-4 py-2 text-sm text-green-600 hover:bg-gray-100 w-full text-left"
                     >
                       Save to Firebase
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleDelete(project._id)}
                       className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
@@ -189,6 +235,69 @@ const Displayproj = () => {
         <div className="text-white text-xl font-bold">+</div>
         <span>Add New Project</span>
       </a>
+
+      {/* Modal for Editing Project */}
+      {modalVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
+            <h2 className="text-lg font-bold mb-4">Edit Project</h2>
+            <div>
+              <label className="block mb-2" htmlFor="projectName">
+                Project Name
+              </label>
+              <input
+                type="text"
+                id="projectName"
+                className="w-full border rounded-md px-3 py-2"
+                value={editedProject.projectName}
+                onChange={(e) => setEditedProject({ ...editedProject, projectName: e.target.value })}
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block mb-2" htmlFor="projectDetails">
+                Project Details
+              </label>
+              <textarea
+                id="projectDetails"
+                className="w-full border rounded-md px-3 py-2"
+                value={editedProject.projectDetails}
+                onChange={(e) => setEditedProject({ ...editedProject, projectDetails: e.target.value })}
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block mb-2" htmlFor="repositoryName">
+                Repository Name
+              </label>
+              <input
+                type="text"
+                id="repositoryName"
+                className="w-full border rounded-md px-3 py-2"
+                value={editedProject.repositoryName}
+                onChange={(e) => setEditedProject({ ...editedProject, repositoryName: e.target.value })}
+              />
+            </div>
+            {errorMessage && (
+              <div className="mt-4 text-red-500">
+                {errorMessage} {/* Display the error message */}
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <button
+                className="px-4 py-2 bg-[#41889e] text-white rounded-md hover:bg-[#357a8d] mr-2"
+                onClick={handleUpdateProject}
+              >
+                Save
+              </button>
+              <button
+                className="px-4 py-2 border rounded-md"
+                onClick={() => setModalVisible(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
