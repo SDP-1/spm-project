@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const itemRoutes = require("./routers/itemRoutes");
 const taskRoutes = require("./routers/taskRoutes");
 const projectRoutes = require('./routers/projectRoutes'); 
 const http = require("http");
@@ -26,7 +25,8 @@ const io = new Server(server, {
 });
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://avindiobeyesekere:HrKnOaKiVN7BlAeQ@cluster0.edwkd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://avindiobeyesekere:HrKnOaKiVN7BlAeQ@cluster0.edwkd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI ;
 
 mongoose
   .connect(MONGO_URI, {
@@ -40,7 +40,6 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 // Emit a message when a new item is added
-app.use("/api/items", itemRoutes(io));
 app.use("/api", taskRoutes);
 app.use('/api/projects', projectRoutes); 
 

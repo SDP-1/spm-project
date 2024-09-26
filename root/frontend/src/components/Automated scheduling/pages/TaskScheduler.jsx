@@ -20,6 +20,12 @@ const TaskScheduler = () => {
   const [specificDate, setSpecificDate] = useState("");
   const [selectionMethod, setSelectionMethod] = useState("For Now");
   const [error, setError] = useState("");
+  const [project, setProject] = useState("");
+  const [projects, setProjects] = useState([
+    "Project 01",
+    "Project 02",
+    "Project 03",
+  ]);
 
   const tools = [
     {
@@ -86,6 +92,10 @@ const TaskScheduler = () => {
       setError("Description is required.");
       return;
     }
+    if (!project) {
+      setError("project is required.");
+      return;
+    }
     if (selectedTools.length === 0) {
       setError("You must select at least one tool.");
       return;
@@ -111,9 +121,10 @@ const TaskScheduler = () => {
         frequencyValue,
         specificDate,
         selectionMethod,
+        project, // Include selected project in task data
       };
 
-      const response = await axios.post("/api/tasks", taskData);
+      const response = await axios.post("/api/task/add", taskData);
 
       if (response.status === 200) {
         alert("Task scheduled successfully!");
@@ -126,6 +137,7 @@ const TaskScheduler = () => {
         setFrequencyValue(8);
         setSpecificDate("");
         setSelectionMethod("For Now");
+        setProject("");
       }
     } catch (error) {
       console.error("Error scheduling task:", error);
@@ -135,7 +147,7 @@ const TaskScheduler = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+      <h2 className="text-2xl font-bold text-black mb-4">
         Schedule a New Code Analysis Task
       </h2>
 
@@ -144,6 +156,10 @@ const TaskScheduler = () => {
         setTaskName={setTaskName}
         description={description}
         setDescription={setDescription}
+        projects={projects}
+        project={project}
+        setProject={setProject}
+        disable={false} // Adjust as needed
       />
 
       <SelectionMethod
@@ -188,7 +204,7 @@ const TaskScheduler = () => {
         <ErrorMessage error={error} />
         <Button
           onClick={scheduleTask}
-          className="bg-indigo-700 text-white font-bold py-2 px-4 hover:bg-indigo-800 mt-4"
+          className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e] mt-4"
         >
           Schedule Task
         </Button>
