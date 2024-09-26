@@ -9,7 +9,7 @@ import SelectedMetricsTable from "../component/SelectedMetricsTable";
 import ErrorMessage from "../component/ErrorMessage";
 import axios from "axios";
 
-const TaskScheduler = () => {
+const TaskScheduler = ({ onClose, refreshTasks }) => {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTools, setSelectedTools] = useState([]);
@@ -23,6 +23,9 @@ const TaskScheduler = () => {
   const [project, setProject] = useState(""); // Project name selected
   const [projectId, setProjectId] = useState(""); // Store projectId separately
   const [projects, setProjects] = useState([]); // To store fetched projects
+
+  // Step control state
+  const [currentStep, setCurrentStep] = useState(1);
 
   const tools = [
     {
@@ -75,9 +78,7 @@ const TaskScheduler = () => {
         },
       };
 
-      const allMetricsUnselected = !Object.values(
-        updatedMetrics[tool]
-      ).includes(true);
+      const allMetricsUnselected = !Object.values(updatedMetrics[tool]).includes(true);
       if (allMetricsUnselected) {
         setError("You must select at least one metric for each tool.");
         return prev;
@@ -100,6 +101,7 @@ const TaskScheduler = () => {
   };
 
   const scheduleTask = async () => {
+    // Validate inputs
     if (!taskName) {
       setError("Task name is required.");
       return;
@@ -143,7 +145,11 @@ const TaskScheduler = () => {
       const response = await axios.post("/api/task/add", taskData);
 
       if (response.status === 200) {
-        alert("Task scheduled successfully!");
+        alert("Task scheduled successfully!"); // Show alert before closing modal
+        onClose(); // Close the modal
+        refreshTasks(); // Refresh the task list in TaskPreview
+
+        // Reset fields
         setTaskName("");
         setDescription("");
         setSelectedTools([]);
@@ -162,70 +168,98 @@ const TaskScheduler = () => {
     }
   };
 
+  // Handlers for navigation between steps
+  const handleNextStep = () => setCurrentStep(2);
+  const handlePrevStep = () => setCurrentStep(1);
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold text-black mb-4">
-        Schedule a New Code Analysis Task
-      </h2>
-
-      <TaskForm
-        taskName={taskName}
-        setTaskName={setTaskName}
-        description={description}
-        setDescription={setDescription}
-        projects={projects} // Pass fetched projects to TaskForm
-        project={project} // Pass selected project name
-        setProject={handleProjectSelection} // Update selection handler
-        disable={false} // Adjust as needed
-      />
-
-      <SelectionMethod
-        selectionMethod={selectionMethod}
-        handleSelectionMethodChange={handleSelectionMethodChange}
-      />
-
-      {recurring && (
-        <FrequencySettings
-          frequencyType={frequencyType}
-          setFrequencyType={setFrequencyType}
-          frequencyValue={frequencyValue}
-          setFrequencyValue={setFrequencyValue}
-          specificDate={specificDate}
-          setSpecificDate={setSpecificDate}
-        />
-      )}
-
-      <ToolSelector
-        tools={tools}
-        selectedTools={selectedTools}
-        handleToolSelection={handleToolSelection}
-      />
-
-      {selectedTools.length > 0 && (
+    <div className="bg-white p-6 rounded-lg max-w-3xl mx-auto">
+      {currentStep === 1 && (
         <>
-          <MetricSelector
-            tools={tools}
-            selectedTools={selectedTools}
-            toolMetrics={toolMetrics}
-            handleMetricChange={handleMetricChange}
+          <h2 className="text-xl font-bold text-black mb-4">
+            Schedule a New Code Analysis Task
+          </h2>
+          {/* Step 1: Task Info */}
+          <TaskForm
+            taskName={taskName}
+            setTaskName={setTaskName}
+            description={description}
+            setDescription={setDescription}
+            projects={projects} // Pass fetched projects to TaskForm
+            project={project} // Pass selected project name
+            setProject={handleProjectSelection} // Update selection handler
+            disable={false} // Adjust as needed
           />
-          <SelectedMetricsTable
-            tools={tools}
-            selectedTools={selectedTools}
-            toolMetrics={toolMetrics}
-          />
+          <div className="flex justify-end mt-4">
+            <Button
+              onClick={handleNextStep}
+              className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e]"
+            >
+              Next
+            </Button>
+          </div>
         </>
       )}
 
-      <div className="mb-4">
-        <ErrorMessage error={error} />
-        <Button
-          onClick={scheduleTask}
-          className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e] mt-4"
-        >
-          Schedule Task
-        </Button>
-      </div>
+      {currentStep === 2 && (
+        <>
+          {/* Step 2: Task Details */}
+          <SelectionMethod
+            selectionMethod={selectionMethod}
+            handleSelectionMethodChange={handleSelectionMethodChange}
+          />
+
+          {recurring && (
+            <FrequencySettings
+              frequencyType={frequencyType}
+              setFrequencyType={setFrequencyType}
+              frequencyValue={frequencyValue}
+              setFrequencyValue={setFrequencyValue}
+              specificDate={specificDate}
+              setSpecificDate={setSpecificDate}
+            />
+          )}
+
+          <ToolSelector
+            tools={tools}
+            selectedTools={selectedTools}
+            handleToolSelection={handleToolSelection}
+          />
+
+          {selectedTools.length > 0 && (
+            <>
+              <MetricSelector
+                tools={tools}
+                selectedTools={selectedTools}
+                toolMetrics={toolMetrics}
+                handleMetricChange={handleMetricChange}
+              />
+              <SelectedMetricsTable
+                tools={tools}
+                selectedTools={selectedTools}
+                toolMetrics={toolMetrics}
+              />
+            </>
+          )}
+
+          <div className="flex justify-between mt-4">
+            <Button
+              onClick={handlePrevStep}
+              className="bg-gray-400 text-white font-bold py-2 px-4 hover:bg-gray-600"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={scheduleTask}
+              className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e]"
+            >
+              Schedule Task
+            </Button>
+          </div>
+        </>
+      )}
+
+      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

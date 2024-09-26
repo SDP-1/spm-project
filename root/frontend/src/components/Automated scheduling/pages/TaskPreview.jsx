@@ -1,18 +1,20 @@
+// TaskPreview.js
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FaStar, FaEllipsisV, FaSearch, FaSort } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import TaskModal from "../component/TaskModal"; // Import the new modal component
 
 const TaskPreview = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortType, setSortType] = useState("updatedAt"); // Default sort by updated time
+  const [sortType, setSortType] = useState("updatedAt");
   const [error, setError] = useState("");
-  const [showMenu, setShowMenu] = useState(null); // State to track which task's menu is open
-  const navigate = useNavigate(); // Hook for navigation
-
-  const menuRefs = useRef({}); // To track refs for each menu
+  const [showMenu, setShowMenu] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const navigate = useNavigate();
+  const menuRefs = useRef({});
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -28,17 +30,16 @@ const TaskPreview = () => {
     };
 
     fetchTasks();
-  }, [sortType]); // Re-run when sortType changes
+  }, [sortType]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Iterate over each menuRef to check if the click is outside
       Object.keys(menuRefs.current).forEach((taskId) => {
         if (
           menuRefs.current[taskId] &&
           !menuRefs.current[taskId].contains(event.target)
         ) {
-          setShowMenu(null); // Close the menu if clicking outside
+          setShowMenu(null);
         }
       });
     };
@@ -68,7 +69,7 @@ const TaskPreview = () => {
         task.taskName.toLowerCase().includes(value) ||
         task.description.toLowerCase().includes(value)
     );
-    setFilteredTasks(sortTasks(filtered, sortType)); // Apply sorting to filtered tasks
+    setFilteredTasks(sortTasks(filtered, sortType));
   };
 
   const handleSort = () => {
@@ -82,7 +83,6 @@ const TaskPreview = () => {
   };
 
   const toggleStar = async (taskId) => {
-    // Optimistically update the UI before the API call
     const updatedTasks = tasks.map((task) =>
       task._id === taskId ? { ...task, star: !task.star } : task
     );
@@ -90,19 +90,13 @@ const TaskPreview = () => {
     setFilteredTasks(sortTasks(updatedTasks, sortType));
 
     try {
-      // Find the task to be updated
       const taskToUpdate = tasks.find((task) => task._id === taskId);
       const updatedStarStatus = !taskToUpdate.star;
 
-      // Send the update to the backend using the star update route
       await axios.put(`/api/task/star/${taskId}`, { star: updatedStarStatus });
-
-      // If successful, no further action is needed since the UI is already updated optimistically
     } catch (error) {
       console.error("Error updating star status:", error);
       setError("Failed to update star status");
-
-      // Revert the UI change in case of an error
       const revertedTasks = tasks.map((task) =>
         task._id === taskId ? { ...task, star: taskToUpdate.star } : task
       );
@@ -125,7 +119,7 @@ const TaskPreview = () => {
         setFilteredTasks((prevFilteredTasks) =>
           prevFilteredTasks.filter((task) => task._id !== taskId)
         );
-        setShowMenu(null); // Close the menu after deletion
+        setShowMenu(null);
       } catch (error) {
         console.error("Error deleting task:", error);
         setError("Failed to delete task");
@@ -134,10 +128,9 @@ const TaskPreview = () => {
   };
 
   const handleShowDetails = (taskId) => {
-    navigate(`/task/${taskId}`); // Navigate to task details page
+    navigate(`/task/${taskId}`);
   };
 
-  // Helper function to format date
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
@@ -149,10 +142,20 @@ const TaskPreview = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const roundToNearestMinute = (date) => {
-    const roundedDate = new Date(date);
-    roundedDate.setSeconds(0, 0); // Reset seconds and milliseconds to 0
-    return roundedDate.getTime();
+  const refreshTasks = async () => {
+    try {
+      const response = await axios.get("/api/tasks");
+      const sortedTasks = sortTasks(response.data, sortType);
+      setTasks(sortedTasks); // Update tasks with fresh data
+      setFilteredTasks(sortedTasks); // Also update filteredTasks
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setError("Failed to refresh tasks.");
+    }
+  };
+
+  const handleOpenScheduler = () => {
+    setIsSchedulerOpen(true); // Assuming you manage the modal state
   };
 
   return (
@@ -222,12 +225,12 @@ const TaskPreview = () => {
                   {showMenu === task._id && (
                     <div
                       className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg py-2"
-                      ref={(el) => (menuRefs.current[task._id] = el)} // Set ref for this task's menu
+                      ref={(el) => (menuRefs.current[task._id] = el)}
                     >
                       <button
                         className="w-full text-left px-4 py-1 text-red-600 hover:bg-gray-100 text-xs"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevents event from bubbling up and triggering `handleClickOutside`
+                          e.stopPropagation();
                           handleDelete(task._id);
                         }}
                       >
@@ -241,14 +244,29 @@ const TaskPreview = () => {
             <p className="text-gray-500 text-sm">{task.description}</p>
             <p className="text-gray-500 text-xs mt-2">
               Created: {formatDate(task.createdAt)}
-              {roundToNearestMinute(task.createdAt) !==
-                roundToNearestMinute(task.updatedAt) && (
+              {new Date(task.createdAt).getTime() !==
+                new Date(task.updatedAt).getTime() && (
                 <> | Updated: {formatDate(task.updatedAt)}</>
               )}
             </p>
           </div>
         ))}
       </div>
+
+      <button
+        onClick={() => setIsModalOpen(true)} // Open modal on click
+        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
+      >
+        <div className="text-white text-xl font-bold">+</div>
+        <span>Add New Task</span>
+      </button>
+
+      {/* Modal for adding new task */}
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        refreshTasks={refreshTasks}
+      />
     </div>
   );
 };
