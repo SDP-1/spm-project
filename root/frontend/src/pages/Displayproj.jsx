@@ -161,20 +161,30 @@ const Displayproj = () => {
               <p className="text-sm text-gray-500 mt-2">
                 <strong>Repository Name:</strong> {project.repositoryName}
               </p>
-             
+
               <p className="text-sm text-gray-500 mt-2">
-  <strong>Repository URL:</strong> {project.repositoryUrl ? (
-    project.repositoryUrl // Display the URL as plain text
-  ) : (
-    <span className="text-red-400">No repo cloned</span> // Apply light red color
-  )}
-</p>
+                <strong>Repository URL:</strong> {project.repositoryUrl ? (
+                  project.repositoryUrl // Display the URL as plain text
+                ) : (
+                  <span className="text-red-400">No repo cloned</span> // Apply light red color
+                )}
+              </p>
 
-
-  
+              {/* <button
+        onClick={() => handleCloneLocally(project)} // Add your clone functionality here
+        className="mt-4 px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent"
+      >
+        Clone Locally
+      </button> */}
 
             </div>
             <div className="flex items-center space-x-4">
+            <button
+        onClick={() => handleCloneLocally(project)} // Add your clone functionality here
+        className="px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent"
+      >
+        Clone Locally
+      </button>
               <a
                 onClick={() => navigate(`/newrepo/${project._id}`)} // Pass project ID
                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
@@ -182,6 +192,7 @@ const Displayproj = () => {
                 <span className="mr-2">Add Repository</span>
                 <FaArrowRight />
               </a>
+              
               <a
                 onClick={() => handleEditClick(project)} // Show modal on click
                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
