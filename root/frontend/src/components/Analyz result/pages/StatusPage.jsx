@@ -1,8 +1,8 @@
-// StatusPage.jsx
 import React, { useState, useEffect } from "react";
-import OverallCodeAnalysis from "../component/OverallCodeAnalysis"; 
-import FileList from "../component/FileList"; 
-import FilePreview from "../component/FilePreview"; 
+import OverallCodeAnalysis from "../component/OverallCodeAnalysis";
+import FileList from "../component/FileList";
+import FilePreview from "../component/FilePreview";
+import FileSelectModal from "../component/FileSelectModal"; // Import the modal component
 
 const StatusPage = () => {
   const metricsData = {
@@ -73,22 +73,34 @@ const StatusPage = () => {
     },
   };
 
-  // Initialize selectedFile to the first file if available
-  const [selectedFile, setSelectedFile] = useState(Object.keys(metricsData.results)[0] || null);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Changed to handle multiple files
   const [activeTab, setActiveTab] = useState("fileByFile");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
 
-  // Effect to update selectedFile when metricsData results change
   useEffect(() => {
     if (metricsData && metricsData.results) {
       const files = Object.keys(metricsData.results);
-      if (files.length > 0 && !selectedFile) {
-        setSelectedFile(files[0]); // Set to the first file if no file is selected
+      if (files.length > 0 && selectedFiles.length === 0) {
+        setSelectedFiles([files[0]]); // Set to the first file if no file is selected
       }
     }
-  }, [metricsData.results]); // Dependency array ensures this runs when results change
+  }, [metricsData.results]);
 
   const handleSelectFile = (file) => {
-    setSelectedFile(file);
+    setSelectedFiles(
+      (prevSelectedFiles) =>
+        prevSelectedFiles.includes(file)
+          ? prevSelectedFiles.filter((f) => f !== file) // Deselect if already selected
+          : [...prevSelectedFiles, file] // Add to selected
+    );
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -121,24 +133,44 @@ const StatusPage = () => {
       {activeTab === "fileByFile" ? (
         <div className="flex">
           <div className="w-1/4">
-            <FileList 
-              files={metricsData.results} 
-              selectedFile={selectedFile} 
-              onSelectFile={handleSelectFile} 
+            <FileList
+              files={metricsData.results}
+              selectedFiles={selectedFiles}
+              onSelectFile={handleSelectFile}
             />
           </div>
-          <div className="w-3/4 ml-6 mt-4">
-            {selectedFile && (
-              <FilePreview 
-                data={metricsData.results[selectedFile]} 
-                fileName={selectedFile.split("\\").pop()} 
-              />
-            )}
+          <div className="w-3/4 ml-6 mt-4 flex flex-col">
+            {selectedFiles.length > 0 &&
+              selectedFiles.map((file) => (
+                <FilePreview
+                  key={file}
+                  data={metricsData.results[file]}
+                  fileName={file.split("\\").pop()}
+                />
+              ))}
           </div>
         </div>
       ) : (
         <OverallCodeAnalysis data={metricsData.results} />
       )}
+
+      {/* Fixed Button to Print Document */}
+      <button
+        onClick={handleOpenModal}
+        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
+      >
+        <div className="text-white text-xl font-bold">+</div>
+        <span>Print Document</span>
+      </button>
+
+      {/* File Selection Modal */}
+      <FileSelectModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        files={metricsData.results}
+        onSelectFile={handleSelectFile}
+        selectedFiles={selectedFiles} // Pass selected files
+      />
     </div>
   );
 };
