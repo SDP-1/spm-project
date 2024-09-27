@@ -104,9 +104,12 @@ const StatusPage = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100">
+    <div className="relative p-6 bg-gray-100 min-h-screen">
+      
+      {/* Ensure the parent has min-h-screen to accommodate fixed elements */}
+      <div className="relative" >
+      <div className="fixed pt-5 top-0 w-full bg-gray-100 z-50 "> {/* Fixed header */}
       <h1 className="text-2xl font-bold mb-6">File Analysis</h1>
-
       {/* Tab Navigation */}
       <nav className="flex space-x-4 text-[#41889e] mb-6">
         <a
@@ -128,18 +131,19 @@ const StatusPage = () => {
           Overall Code
         </a>
       </nav>
-
+      </div>
+      </div>
       {/* Tab Content */}
       {activeTab === "fileByFile" ? (
-        <div className="flex">
-          <div className="w-1/4">
+        <div className="flex mt-28 ">
+          <div className="fixed  w-1/4">
             <FileList
               files={metricsData.results}
               selectedFiles={selectedFiles}
               onSelectFile={handleSelectFile}
             />
           </div>
-          <div className="w-3/4 ml-6 mt-4 flex flex-col">
+          <div className="w-3/4 ml-80 mt-4 flex flex-col">
             {selectedFiles.length > 0 &&
               selectedFiles.map((file) => (
                 <FilePreview
@@ -151,18 +155,19 @@ const StatusPage = () => {
           </div>
         </div>
       ) : (
-        <OverallCodeAnalysis data={metricsData.results} />
+        <div  className="mt-28">
+          <OverallCodeAnalysis data={metricsData.results} />
+        </div>
+        
       )}
-
       {/* Fixed Button to Print Document */}
       <button
         onClick={handleOpenModal}
-        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2"
+        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2 z-50"
       >
         <div className="text-white text-xl font-bold">+</div>
         <span>Print Document</span>
       </button>
-
       {/* File Selection Modal */}
       <FileSelectModal
         isOpen={isModalOpen}
