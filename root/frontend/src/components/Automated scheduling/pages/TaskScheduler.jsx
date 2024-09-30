@@ -17,7 +17,7 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
-  const [specificDate, setSpecificDate] = useState("");
+  const [SpecificTime, setSpecificTime] = useState("");
   const [selectionMethod, setSelectionMethod] = useState("For Now");
   const [error, setError] = useState("");
   const [project, setProject] = useState(""); // Project name selected
@@ -78,7 +78,9 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
         },
       };
 
-      const allMetricsUnselected = !Object.values(updatedMetrics[tool]).includes(true);
+      const allMetricsUnselected = !Object.values(
+        updatedMetrics[tool]
+      ).includes(true);
       if (allMetricsUnselected) {
         setError("You must select at least one metric for each tool.");
         return prev;
@@ -122,8 +124,22 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
     const invalidToolMetrics = selectedTools.find((tool) => {
       return !Object.values(toolMetrics[tool] || {}).includes(true);
     });
+
     if (invalidToolMetrics) {
       setError("You must select at least one metric for each selected tool.");
+      return;
+    }
+
+    if (frequencyType === "SpecificTime" && !SpecificTime) {
+      setError("Please select a specific time.");
+      return;
+    }
+
+    if (
+      frequencyType === "Hourly" &&
+      (frequencyValue <= 0 || isNaN(frequencyValue))
+    ) {
+      setError("Please enter a valid hourly value greater than 0.");
       return;
     }
 
@@ -137,7 +153,7 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
         recurring,
         frequencyType,
         frequencyValue,
-        specificDate,
+        SpecificTime,
         selectionMethod,
         projectId,
       };
@@ -157,7 +173,7 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
         setRecurring(false);
         setFrequencyType("Daily");
         setFrequencyValue(8);
-        setSpecificDate("");
+        setSpecificTime("");
         setSelectionMethod("For Now");
         setProject("");
         setProjectId(""); // Clear the projectId as well
@@ -169,7 +185,17 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
   };
 
   // Handlers for navigation between steps
-  const handleNextStep = () => setCurrentStep(2);
+  const handleNextStep = () => {
+    if (currentStep === 1) {
+      // Check if a project is selected before proceeding
+      if (!projectId) {
+        setError("Please select a project before proceeding.");
+        return;
+      }
+    }
+    setCurrentStep(2);
+  };
+
   const handlePrevStep = () => setCurrentStep(1);
 
   return (
@@ -215,8 +241,8 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
               setFrequencyType={setFrequencyType}
               frequencyValue={frequencyValue}
               setFrequencyValue={setFrequencyValue}
-              specificDate={specificDate}
-              setSpecificDate={setSpecificDate}
+              SpecificTime={SpecificTime}
+              setSpecificTime={setSpecificTime}
             />
           )}
 

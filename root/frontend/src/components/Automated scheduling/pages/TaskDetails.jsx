@@ -24,7 +24,7 @@ const TaskDetails = () => {
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
-  const [specificDate, setSpecificDate] = useState("");
+  const [SpecificTime, setSpecificTime] = useState("");
   const [selectedTools, setSelectedTools] = useState([]);
   const [toolMetrics, setToolMetrics] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -44,9 +44,9 @@ const TaskDetails = () => {
         setRecurring(taskData.recurring);
         setFrequencyType(taskData.frequencyType || "Daily");
         setFrequencyValue(taskData.frequencyValue || 8);
-        setSpecificDate(
-          taskData.specificDate
-            ? new Date(taskData.specificDate).toISOString().slice(0, 16)
+        setSpecificTime(
+          taskData.frequencyType === "SpecificTime" && taskData.SpecificTime
+            ? taskData.SpecificTime // Use it directly for time input
             : ""
         );
         setSelectedTools(taskData.selectedTools || []);
@@ -82,9 +82,7 @@ const TaskDetails = () => {
           recurring,
           frequencyType,
           frequencyValue,
-          specificDate: specificDate
-            ? new Date(specificDate).toISOString()
-            : "",
+          SpecificTime: SpecificTime,
           selectedTools,
           toolMetrics,
         });
@@ -129,9 +127,9 @@ const TaskDetails = () => {
       setRecurring(initialTask.recurring);
       setFrequencyType(initialTask.frequencyType || "Daily");
       setFrequencyValue(initialTask.frequencyValue || 8);
-      setSpecificDate(
-        initialTask.specificDate
-          ? new Date(initialTask.specificDate).toISOString().slice(0, 16)
+      setSpecificTime(
+        initialTask.SpecificTime
+          ? new Date(initialTask.SpecificTime).toISOString().slice(0, 16)
           : ""
       );
       setSelectedTools(initialTask.selectedTools || []);
@@ -222,8 +220,8 @@ const TaskDetails = () => {
             setFrequencyType={setFrequencyType}
             frequencyValue={frequencyValue}
             setFrequencyValue={setFrequencyValue}
-            specificDate={specificDate}
-            setSpecificDate={setSpecificDate}
+            SpecificTime={SpecificTime}
+            setSpecificTime={setSpecificTime}
             disable={!isEditing}
           />
         )}

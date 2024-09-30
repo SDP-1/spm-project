@@ -5,21 +5,23 @@ const FrequencySettings = ({
   setFrequencyType,
   frequencyValue,
   setFrequencyValue,
-  specificDate,
-  setSpecificDate,
-  disable
+  SpecificTime,
+  setSpecificTime,
+  disable,
 }) => (
   <div className="mb-4">
-    <label className="block text-gray-700 text-sm font-bold mb-2">Frequency</label>
+    <label className="block text-gray-700 text-sm font-bold mb-2">
+      Frequency
+    </label>
     <select
       value={frequencyType}
       onChange={(e) => !disable && setFrequencyType(e.target.value)}
       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       disabled={disable}
     >
-      <option value="Daily">Daily</option>
-      <option value="Hourly">Hourly</option>
-      <option value="SpecificDate">Specific Date</option>
+      <option value="Daily">Daily 12.00am</option>
+      <option value="Hourly">By Hourly</option>
+      <option value="SpecificTime">Specific time</option>
     </select>
 
     {frequencyType === "Hourly" && (
@@ -33,12 +35,12 @@ const FrequencySettings = ({
       />
     )}
 
-    {frequencyType === "SpecificDate" && (
+    {frequencyType === "SpecificTime" && (
       <input
-        type="datetime-local"
-        value={specificDate}
-        onChange={(e) => !disable && setSpecificDate(e.target.value)}
-        className="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        type="time"
+        value={SpecificTime}
+        onChange={(e) => !disable && setSpecificTime(e.target.value)}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         disabled={disable}
       />
     )}
