@@ -4,6 +4,7 @@ const Task = require("../models/task");
 
 // Correctly import scheduleTask from the automation module
 const { scheduleTask } = require("../automation/automatedTaskExecution");
+const { clearScheduledTask } = require("../automation/automatedTaskExecution");
 
 // Route to create a new task
 router.post("/task/add", async (req, res) => {
@@ -109,6 +110,8 @@ router.delete("/task/:id", async (req, res) => {
     const taskId = req.params.id;
     const deletedTask = await Task.findByIdAndDelete(taskId);
     if (deletedTask) {
+      // remove the task after deleting
+      clearScheduledTask(deletedTask._id); // Stop the cron job associated with the deleted task
       res.status(200).json({ message: "Task deleted successfully!" });
     } else {
       res.status(404).json({ message: "Task not found" });

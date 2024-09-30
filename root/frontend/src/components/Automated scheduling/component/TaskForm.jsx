@@ -7,7 +7,7 @@ const TaskForm = ({
   description,
   setDescription,
   projects,
-  project,
+  projectId, // Renamed for clarity
   setProject,
   disable,
 }) => (
@@ -26,6 +26,7 @@ const TaskForm = ({
         value={taskName}
         onChange={(e) => !disable && setTaskName(e.target.value)}
         disabled={disable}
+        placeholder="Enter task name" // Placeholder for clarity
       />
     </div>
 
@@ -43,24 +44,25 @@ const TaskForm = ({
         value={description}
         onChange={(e) => !disable && setDescription(e.target.value)}
         disabled={disable}
+        placeholder="Enter task description" // Placeholder for clarity
       />
     </div>
 
     <div className="mb-4 relative">
       <label
         className="block text-gray-700 text-sm font-bold mb-2"
-        htmlFor="dropdown"
+        htmlFor="projectDropdown"
       >
-        Select project
+        Select Project
       </label>
       <select
-        id="dropdown"
-        value={project}
+        id="projectDropdown"
+        value={projectId} // Use projectId for controlled component
         onChange={(e) => !disable && setProject(e.target.value)}
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10"
         disabled={disable}
       >
-        <option value="">Select project</option>
+        <option value="">Select a project</option>
         {projects.map((item) => (
           <option key={item._id} value={item._id}>
             {item.projectName} {/* Display the project name */}

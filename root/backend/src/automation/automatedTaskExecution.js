@@ -40,11 +40,6 @@ const scheduleTask = (task) => {
     cronJob = cron.schedule(`0 */${interval} * * *`, () => {
       executeTask(task);
     });
-    //for Every Minute for testing
-
-    // cronJob = cron.schedule("* * * * *", () => {
-    //   executeTask(task);
-    // });
   } else if (task.frequencyType === "SpecificTime") {
     const [hour, minute] = task.SpecificTime.split(":").map(Number);
     cronJob = cron.schedule(`${minute} ${hour} * * *`, () => {

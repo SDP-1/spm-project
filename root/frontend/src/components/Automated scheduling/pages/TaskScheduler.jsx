@@ -20,7 +20,6 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
   const [SpecificTime, setSpecificTime] = useState("");
   const [selectionMethod, setSelectionMethod] = useState("For Now");
   const [error, setError] = useState("");
-  const [project, setProject] = useState(""); // Project name selected
   const [projectId, setProjectId] = useState(""); // Store projectId separately
   const [projects, setProjects] = useState([]); // To store fetched projects
 
@@ -97,9 +96,9 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
     setError("");
   };
 
-  const handleProjectSelection = (projectId, projectName) => {
-    setProjectId(projectId); // Set projectId
-    setProject(projectName); // Set projectName (to show in the form)
+  // Updated project selection to ensure it works with the dropdown
+  const handleProjectSelection = (projectId) => {
+    setProjectId(projectId); // Set projectId only
   };
 
   const scheduleTask = async () => {
@@ -175,7 +174,6 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
         setFrequencyValue(8);
         setSpecificTime("");
         setSelectionMethod("For Now");
-        setProject("");
         setProjectId(""); // Clear the projectId as well
       }
     } catch (error) {
@@ -185,17 +183,7 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
   };
 
   // Handlers for navigation between steps
-  const handleNextStep = () => {
-    if (currentStep === 1) {
-      // Check if a project is selected before proceeding
-      if (!projectId) {
-        setError("Please select a project before proceeding.");
-        return;
-      }
-    }
-    setCurrentStep(2);
-  };
-
+  const handleNextStep = () => setCurrentStep(2);
   const handlePrevStep = () => setCurrentStep(1);
 
   return (
@@ -212,7 +200,7 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
             description={description}
             setDescription={setDescription}
             projects={projects} // Pass fetched projects to TaskForm
-            project={project} // Pass selected project name
+            projectId={projectId} // Pass projectId to control the dropdown
             setProject={handleProjectSelection} // Update selection handler
             disable={false} // Adjust as needed
           />
