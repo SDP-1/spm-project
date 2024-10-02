@@ -7,6 +7,7 @@ import {
   FaEdit,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import CloneModal from './CloneModal';
 
 const Displayproj = () => {
   const [projects, setProjects] = useState([]);
@@ -18,6 +19,7 @@ const Displayproj = () => {
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
   const [editedProject, setEditedProject] = useState({ projectName: "", projectDetails: "", repositoryName: "" }); // State for edited project
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
@@ -36,6 +38,19 @@ const Displayproj = () => {
 
     fetchProjects();
   }, []);
+
+  const handleCloneLocally = () => {
+    setIsModalOpen(true); // Set modal state to true
+  };
+
+  // Function to handle cloning logic
+const handleClone = async (url, folderPath) => { // Accept folderPath as an argument
+  console.log("Cloning repository:", url);
+  console.log("Cloning to folder:", folderPath); // Log the folder path
+  // Simulate cloning process with a 2-second delay
+  return new Promise((resolve) => setTimeout(resolve, 2000));
+};
+
 
   const handleDelete = async (projectId) => {
     try {
@@ -129,6 +144,9 @@ const Displayproj = () => {
     }
   };
 
+
+
+
   return (
     <div className="container mx-auto p-4 relative">
       <div className="flex mb-4 space-x-4 items-center">
@@ -179,12 +197,21 @@ const Displayproj = () => {
 
             </div>
             <div className="flex items-center space-x-4">
-            <button
-        onClick={() => handleCloneLocally(project)} // Add your clone functionality here
-        className="px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent"
-      >
-        Clone Locally
-      </button>
+              <button
+                onClick={() => setIsModalOpen(true)} // Open the modal on click
+                className="px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent flex justify-center items-center"
+                style={{ width: '150px' }} // Reduce the button width
+              >
+                Clone Locally
+              </button>
+              {/* Render CloneModal and pass required props */}
+              <CloneModal
+              
+                isOpen={isModalOpen} // Pass the modal visibility state
+                onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
+                onClone={handleClone} // Pass the handleClone function to execute cloning
+              />
+
               <a
                 onClick={() => navigate(`/newrepo/${project._id}`)} // Pass project ID
                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
@@ -192,7 +219,7 @@ const Displayproj = () => {
                 <span className="mr-2">Add Repository</span>
                 <FaArrowRight />
               </a>
-              
+
               <a
                 onClick={() => handleEditClick(project)} // Show modal on click
                 className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300"
@@ -210,33 +237,7 @@ const Displayproj = () => {
                 </button>
                 {dropdownVisible === index && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
-                    {/* <button
-                      onClick={() => {
-                        setSelectedProjectId(project._id);
-                        setRepoName(project.repositoryName);
-                        const mockFiles = [
-                          {
-                            download_url: "https://example.com/file1",
-                            path: "file1.txt",
-                            type: "text/plain",
-                          },
-                          {
-                            download_url: "https://example.com/file2",
-                            path: "file2.txt",
-                            type: "text/plain",
-                          },
-                        ];
-                        setFiles(mockFiles);
-                        handleSaveToFirebase(
-                          project._id,
-                          mockFiles,
-                          project.repositoryName
-                        );
-                      }}
-                      className="block px-4 py-2 text-sm text-green-600 hover:bg-gray-100 w-full text-left"
-                    >
-                      Save to Firebase
-                    </button> */}
+                    
                     <button
                       onClick={() => handleDelete(project._id)}
                       className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
