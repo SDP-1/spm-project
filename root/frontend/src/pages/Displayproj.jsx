@@ -44,12 +44,12 @@ const Displayproj = () => {
   };
 
   // Function to handle cloning logic
-const handleClone = async (url, folderPath) => { // Accept folderPath as an argument
-  console.log("Cloning repository:", url);
-  console.log("Cloning to folder:", folderPath); // Log the folder path
-  // Simulate cloning process with a 2-second delay
-  return new Promise((resolve) => setTimeout(resolve, 2000));
-};
+  const handleClone = async (url, folderPath) => { // Accept folderPath as an argument
+    console.log("Cloning repository:", url);
+    console.log("Cloning to folder:", folderPath); // Log the folder path
+    // Simulate cloning process with a 2-second delay
+    return new Promise((resolve) => setTimeout(resolve, 2000));
+  };
 
 
   const handleDelete = async (projectId) => {
@@ -181,19 +181,18 @@ const handleClone = async (url, folderPath) => { // Accept folderPath as an argu
               </p>
 
               <p className="text-sm text-gray-500 mt-2">
-                <strong>Repository URL:</strong> {project.repositoryUrl ? (
-                  project.repositoryUrl // Display the URL as plain text
-                ) : (
-                  <span className="text-red-400">No repo cloned</span> // Apply light red color
-                )}
-              </p>
+  <strong>Repository URL:</strong>{" "}
+  {project.repositoryUrl && project.repositoryUrl.trim() !== "" ? (
+    project.repositoryUrl
+  ) : (
+    <span style={{ color: "red" }}>No repo cloned</span>
+  )}
+</p>
 
-              {/* <button
-        onClick={() => handleCloneLocally(project)} // Add your clone functionality here
-        className="mt-4 px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent"
-      >
-        Clone Locally
-      </button> */}
+
+              {/* Conditionally render the "Add Repository" button */}
+
+
 
             </div>
             <div className="flex items-center space-x-4">
@@ -206,19 +205,20 @@ const handleClone = async (url, folderPath) => { // Accept folderPath as an argu
               </button>
               {/* Render CloneModal and pass required props */}
               <CloneModal
-              
+
                 isOpen={isModalOpen} // Pass the modal visibility state
                 onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
                 onClone={handleClone} // Pass the handleClone function to execute cloning
               />
-
-              <a
-                onClick={() => navigate(`/newrepo/${project._id}`)} // Pass project ID
-                className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
-              >
-                <span className="mr-2">Add Repository</span>
-                <FaArrowRight />
-              </a>
+{project.repositoryUrl && project.repositoryUrl.trim() === "No repo cloned" && (
+    <a
+      onClick={() => navigate(`/newrepo/${project._id}`)} // Use project ID to navigate
+      className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
+    >
+      <span className="mr-2">Add Repository</span>
+      <FaArrowRight />
+    </a>
+  )}
 
               <a
                 onClick={() => handleEditClick(project)} // Show modal on click
@@ -237,7 +237,7 @@ const handleClone = async (url, folderPath) => { // Accept folderPath as an argu
                 </button>
                 {dropdownVisible === index && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
-                    
+
                     <button
                       onClick={() => handleDelete(project._id)}
                       className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"

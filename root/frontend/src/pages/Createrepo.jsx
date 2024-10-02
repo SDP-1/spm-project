@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaLock, FaUnlock } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Createrepo = () => {
   const [projectName, setProjectName] = useState('');
@@ -7,6 +8,7 @@ const Createrepo = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [authorName, setAuthorName] = useState('');
   const [repositoryName, setRepositoryName] = useState('');
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +44,9 @@ const Createrepo = () => {
       setIsPublic(true);
       setAuthorName('');
       setRepositoryName('');
+
+      // Navigate to /displayproj after successfully creating the project
+      navigate('/displayproj');
     } catch (error) {
       alert('Failed to create the project.');
       console.error('There was an error creating the project!', error);

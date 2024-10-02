@@ -14,7 +14,8 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ message: `${field} is required` });
       }
     }
-    projectData.repositoryUrl = projectData.repositoryUrl || "None";
+    projectData.repositoryUrl = projectData.repositoryUrl || "";
+
     
     const newProject = new Project(projectData);
     await newProject.save();
