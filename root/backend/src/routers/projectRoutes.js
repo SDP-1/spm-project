@@ -3,6 +3,7 @@ const router = express.Router();
 const Project = require('../models/project'); // Adjust path if necessary
 
 // Route to create a new project
+// Route to create a new project
 router.post('/', async (req, res) => {
   try {
     const projectData = req.body;
@@ -14,9 +15,13 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ message: `${field} is required` });
       }
     }
+    
+    // Initialize filePaths as an empty array
+    projectData.filePaths = projectData.filePaths || ""; // Initialize filePaths
+
+    // Set the repositoryUrl if not provided
     projectData.repositoryUrl = projectData.repositoryUrl || "";
 
-    
     const newProject = new Project(projectData);
     await newProject.save();
     res.status(200).json({ message: 'Project created successfully!' });
@@ -103,6 +108,38 @@ router.put('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating project:', error);
     res.status(500).json({ message: 'Failed to update project' });
+  }
+});
+
+// Route to add or update the file path for a project
+// Route to add or update the file path for a project
+router.put('/:id/add-path', async (req, res) => {
+  try {
+    const projectId = req.params.id;  // Extract project ID from URL
+    const { filePath } = req.body;    // Extract filePath from request body
+
+    if (!filePath) {
+      return res.status(400).json({ message: 'File path is required' });
+    }
+
+    // Find the project and update the file path field
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      { filePath },  // Set the filePath field directly
+      { new: true }  // Return the updated document
+    );
+
+    if (!updatedProject) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    res.status(200).json({
+      message: 'File path added successfully!',
+      project: updatedProject
+    });
+  } catch (error) {
+    console.error('Error adding file path:', error);
+    res.status(500).json({ message: 'Failed to add file path' });
   }
 });
 

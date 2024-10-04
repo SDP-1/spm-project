@@ -188,6 +188,15 @@ const Displayproj = () => {
     <span >No repo cloned</span>
   )}
 </p>
+<div className="mt-2">
+  <p>File Path:</p>
+  {project.filePaths ? (
+    <p className="text-sm text-gray-500">{project.filePaths}</p> // Directly display the file path
+  ) : (
+    <p className="text-sm text-gray-500">No file path added</p>
+  )}
+</div>
+
 
 
               {/* Conditionally render the "Add Repository" button */}
@@ -205,11 +214,10 @@ const Displayproj = () => {
               </button>
               {/* Render CloneModal and pass required props */}
               <CloneModal
-
-                isOpen={isModalOpen} // Pass the modal visibility state
-                onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
-                onClone={handleClone} // Pass the handleClone function to execute cloning
-              />
+        isOpen={isModalOpen} // Pass the modal visibility state
+        onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
+        projectId={project._id} // Pass the project ID to the modal
+      />
 { project.repositoryUrl.trim() === "" && (
     <a
       onClick={() => navigate(`/newrepo/${project._id}`)} // Use project ID to navigate

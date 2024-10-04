@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { FaClone } from 'react-icons/fa';
 
-const CloneModal = ({ isOpen, onClose, onClone }) => {
+const CloneModal = ({ isOpen, onClose, projectId }) => {
   const [folderPath, setFolderPath] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Function to handle adding the file path to the project
   const handleClone = async () => {
     setLoading(true);
     setError('');
 
     try {
-      await onClone(folderPath); // Call the cloning function with only folderPath
-      setFolderPath(''); // Clear the folder path after action
+      // API call to update the project with the file path
+      const response = await fetch(`/api/projects/${projectId}/add-path`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filePath: folderPath }), // Send the folderPath as filePath
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add path');
+      }
+
+      const result = await response.json();
+      console.log('File path added successfully:', result);
+
+      setFolderPath(''); // Clear the folder path input
       onClose(); // Close the modal after successful action
     } catch (err) {
       setError('Failed to add path. Please check the input and try again.');
