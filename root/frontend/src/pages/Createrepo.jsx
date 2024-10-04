@@ -54,8 +54,9 @@ const Createrepo = () => {
   };
 
   return (
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
     <div
-      className="max-w-lg mx-auto p-8 bg-white shadow-lg rounded-2xl border border-gray-300"
+      className="max-w-lg mx-auto p-8 bg-white shadow-lg rounded-2xl border border-gray-300 "
       style={{ fontFamily: 'Inter, sans-serif' }} // Using a modern sans-serif font
     >
       <h1 className="text-2xl font-title mb-6">Create Project</h1>
@@ -146,6 +147,7 @@ const Createrepo = () => {
           Create Project
         </button>
       </form>
+    </div>
     </div>
   );
 };

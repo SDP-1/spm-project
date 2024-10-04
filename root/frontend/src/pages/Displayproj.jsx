@@ -149,7 +149,7 @@ const Displayproj = () => {
 
   return (
     
-    <div className="container mx-auto p-4 relative">
+    <div className="container mx-auto p-4 relative bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
       <div className="flex mb-12 space-x-4 items-center">
         <input
           type="text"
