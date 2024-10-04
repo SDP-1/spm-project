@@ -148,6 +148,7 @@ const Displayproj = () => {
 
 
   return (
+    
     <div className="container mx-auto p-4 relative">
       <div className="flex mb-12 space-x-4 items-center">
         <input
@@ -157,7 +158,7 @@ const Displayproj = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button className="flex items-center px-4 py-2 border rounded-md bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
+        <button className="flex items-center px-4 py-2 border rounded-full bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
           <FaFilter className="mr-2" />
           Filter
         </button>
@@ -181,21 +182,23 @@ const Displayproj = () => {
               </p>
 
               <p className="text-sm text-gray-500 mt-2">
-  <strong>Repository URL:</strong>{" "}
-  {project.repositoryUrl && project.repositoryUrl.trim() !== "" ? (
-    project.repositoryUrl
-  ) : (
-    <span >No repo cloned</span>
-  )}
-</p>
-<div className="mt-2">
-  <p>File Path:</p>
-  {project.filePaths ? (
-    <p className="text-sm text-gray-500">{project.filePaths}</p> // Directly display the file path
-  ) : (
-    <p className="text-sm text-gray-500">No file path added</p>
-  )}
-</div>
+                <strong>Repository URL:</strong>{" "}
+                {project.repositoryUrl && project.repositoryUrl.trim() !== "" ? (
+                  project.repositoryUrl
+                ) : (
+                  <span >No repo cloned</span>
+                )}
+              </p>
+              <div className="mt-2">
+                <p className="text-sm text-gray-500 mt-2">
+                  <strong>File Path:</strong>{" "}
+                  {project.filePath && project.filePath.trim() !== "" ? (
+                    project.filePath
+                  ) : (
+                    <span>No file path added</span>
+                  )}
+                </p>
+              </div>
 
 
 
@@ -214,19 +217,19 @@ const Displayproj = () => {
               </button>
               {/* Render CloneModal and pass required props */}
               <CloneModal
-        isOpen={isModalOpen} // Pass the modal visibility state
-        onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
-        projectId={project._id} // Pass the project ID to the modal
-      />
-{ project.repositoryUrl.trim() === "" && (
-    <a
-      onClick={() => navigate(`/newrepo/${project._id}`)} // Use project ID to navigate
-      className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
-    >
-      <span className="mr-2">Add Repository</span>
-      <FaArrowRight />
-    </a>
-  )}
+                isOpen={isModalOpen} // Pass the modal visibility state
+                onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
+                projectId={project._id} // Pass the project ID to the modal
+              />
+              {project.repositoryUrl.trim() === "" && (
+                <a
+                  onClick={() => navigate(`/newrepo/${project._id}`)} // Use project ID to navigate
+                  className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
+                >
+                  <span className="mr-2">Add Repository</span>
+                  <FaArrowRight />
+                </a>
+              )}
 
               <a
                 onClick={() => handleEditClick(project)} // Show modal on click
