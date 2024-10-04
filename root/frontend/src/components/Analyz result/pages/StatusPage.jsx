@@ -111,7 +111,7 @@ const StatusPage = () => {
       <div className="fixed pt-5 top-0 w-full bg-gray-100 z-50 "> {/* Fixed header */}
       <h1 className="text-2xl font-bold mb-6">File Analysis</h1>
       {/* Tab Navigation */}
-      <nav className="flex space-x-4 text-[#41889e] mb-6">
+      <nav className="flex space-x-4 text-[#4F46E5] mb-6">
         <a
           href="#"
           onClick={() => setActiveTab("fileByFile")}
@@ -163,7 +163,7 @@ const StatusPage = () => {
       {/* Fixed Button to Print Document */}
       <button
         onClick={handleOpenModal}
-        className="fixed bottom-4 right-4 bg-[#41889e] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#357a8d] focus:outline-none flex items-center space-x-2 z-50"
+        className="fixed bottom-4 right-4 bg-[#4F46E5] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#8f89ee] focus:outline-none flex items-center space-x-2 z-50"
       >
         <div className="text-white text-xl font-bold">+</div>
         <span>Print Document</span>

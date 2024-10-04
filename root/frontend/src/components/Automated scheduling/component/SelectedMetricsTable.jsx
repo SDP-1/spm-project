@@ -1,4 +1,3 @@
-// src/component/SelectedMetricsTable.jsx
 import React from "react";
 
 const SelectedMetricsTable = ({ tools, selectedTools, toolMetrics }) => (
@@ -20,8 +19,7 @@ const SelectedMetricsTable = ({ tools, selectedTools, toolMetrics }) => (
                 {tool.metrics
                   .filter(
                     (metric) =>
-                      toolMetrics[tool.name] &&
-                      toolMetrics[tool.name][metric]
+                      toolMetrics[tool.name] && toolMetrics[tool.name][metric]
                   )
                   .map((metric) => (
                     <li key={metric}>{metric}</li>

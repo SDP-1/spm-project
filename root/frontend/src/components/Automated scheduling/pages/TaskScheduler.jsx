@@ -8,6 +8,9 @@ import MetricSelector from "../component/MetricSelector";
 import SelectedMetricsTable from "../component/SelectedMetricsTable";
 import ErrorMessage from "../component/ErrorMessage";
 import axios from "axios";
+import { FaArrowLeft } from "react-icons/fa"; // Back icon
+import { FaCalendarCheck } from "react-icons/fa"; // Schedule task icon
+import { FaArrowRight } from "react-icons/fa"; // Import the right arrow icon
 
 const TaskScheduler = ({ onClose, refreshTasks }) => {
   const [taskName, setTaskName] = useState("");
@@ -187,30 +190,41 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
   const handlePrevStep = () => setCurrentStep(1);
 
   return (
-    <div className="bg-white p-6 rounded-lg max-w-3xl mx-auto">
+    <div className="bg-white p-3 rounded-lg max-w-3xl mx-auto">
       {currentStep === 1 && (
         <>
-          <h2 className="text-xl font-bold text-black mb-4">
-            Schedule a New Code Analysis Task
-          </h2>
-          {/* Step 1: Task Info */}
-          <TaskForm
-            taskName={taskName}
-            setTaskName={setTaskName}
-            description={description}
-            setDescription={setDescription}
-            projects={projects} // Pass fetched projects to TaskForm
-            projectId={projectId} // Pass projectId to control the dropdown
-            setProject={handleProjectSelection} // Update selection handler
-            disable={false} // Adjust as needed
-          />
-          <div className="flex justify-end mt-4">
-            <Button
-              onClick={handleNextStep}
-              className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e]"
-            >
-              Next
-            </Button>
+          <div className="h-85 overflow-auto">
+            {" "}
+            {/* 80 is a value in Tailwind's spacing scale (20rem) */}
+            <h2 className="text-xl font-bold text-black mb-4">
+              Schedule a New Code Analysis Task
+            </h2>
+            {/* Step 1: Task Info */}
+            <TaskForm
+              taskName={taskName}
+              setTaskName={setTaskName}
+              description={description}
+              setDescription={setDescription}
+              projects={projects} // Pass fetched projects to TaskForm
+              projectId={projectId} // Pass projectId to control the dropdown
+              setProject={handleProjectSelection} // Update selection handler
+              disable={false} // Adjust as needed
+            />
+          </div>
+
+          {error && <ErrorMessage error={error} />}
+
+          {/* Wrap the button and other elements in a relative container */}
+          <div className="relative">
+            <div className="flex justify-end mt-12">
+              <Button
+                onClick={handleNextStep}
+                className="bg-[#4F46E5] text-white font-bold py-2 px-4 hover:bg-[#8f89ee] hover:text-white flex items-center absolute" // Absolute position classes
+              >
+                Next
+                <FaArrowRight className="ml-2" /> {/* Right arrow icon */}
+              </Button>
+            </div>
           </div>
         </>
       )}
@@ -218,62 +232,65 @@ const TaskScheduler = ({ onClose, refreshTasks }) => {
       {currentStep === 2 && (
         <>
           {/* Step 2: Task Details */}
-          <SelectionMethod
-            selectionMethod={selectionMethod}
-            handleSelectionMethodChange={handleSelectionMethodChange}
-          />
-
-          {recurring && (
-            <FrequencySettings
-              frequencyType={frequencyType}
-              setFrequencyType={setFrequencyType}
-              frequencyValue={frequencyValue}
-              setFrequencyValue={setFrequencyValue}
-              SpecificTime={SpecificTime}
-              setSpecificTime={setSpecificTime}
+          <div className="h-[calc(70vh-9rem)] overflow-auto">
+            <SelectionMethod
+              selectionMethod={selectionMethod}
+              handleSelectionMethodChange={handleSelectionMethodChange}
             />
-          )}
-
-          <ToolSelector
-            tools={tools}
-            selectedTools={selectedTools}
-            handleToolSelection={handleToolSelection}
-          />
-
-          {selectedTools.length > 0 && (
-            <>
-              <MetricSelector
-                tools={tools}
-                selectedTools={selectedTools}
-                toolMetrics={toolMetrics}
-                handleMetricChange={handleMetricChange}
+            {recurring && (
+              <FrequencySettings
+                frequencyType={frequencyType}
+                setFrequencyType={setFrequencyType}
+                frequencyValue={frequencyValue}
+                setFrequencyValue={setFrequencyValue}
+                SpecificTime={SpecificTime}
+                setSpecificTime={setSpecificTime}
               />
-              <SelectedMetricsTable
-                tools={tools}
-                selectedTools={selectedTools}
-                toolMetrics={toolMetrics}
-              />
-            </>
-          )}
+            )}
+            <ToolSelector
+              tools={tools}
+              selectedTools={selectedTools}
+              handleToolSelection={handleToolSelection}
+            />
+            {selectedTools.length > 0 && (
+              <>
+                <MetricSelector
+                  tools={tools}
+                  selectedTools={selectedTools}
+                  toolMetrics={toolMetrics}
+                  handleMetricChange={handleMetricChange}
+                />
+                <SelectedMetricsTable
+                  tools={tools}
+                  selectedTools={selectedTools}
+                  toolMetrics={toolMetrics}
+                />
+              </>
+            )}
+          </div>
+          {error && <ErrorMessage error={error} />}
 
-          <div className="flex justify-between mt-4">
-            <Button
-              onClick={handlePrevStep}
-              className="bg-gray-400 text-white font-bold py-2 px-4 hover:bg-gray-600"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={scheduleTask}
-              className="bg-[#41889e] text-white font-bold py-2 px-4 hover:bg-[#36707e]"
-            >
-              Schedule Task
-            </Button>
+          {/* Container for Fixed Position Buttons */}
+          <div className="relative">
+            <div className="flex justify-between mt-4 absolute  left-0 right-0 p-2 bg-white">
+              <Button
+                onClick={handlePrevStep}
+                className="bg-gray-400 text-white font-bold py-2 px-4 hover:bg-[#8f89ee] hover:text-white flex items-center"
+              >
+                <FaArrowLeft className="mr-2" /> {/* Left arrow icon */}
+                Back
+              </Button>
+              <Button
+                onClick={scheduleTask}
+                className="bg-[#4F46E5] text-white font-bold py-2 px-4 hover:bg-[#8f89ee] hover:text-white flex items-center"
+              >
+                <FaCalendarCheck className="mr-2" /> {/* Calendar check icon */}
+                Schedule Task
+              </Button>
+            </div>
           </div>
         </>
       )}
-
-      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

@@ -183,10 +183,11 @@ const TaskDetails = () => {
     <div className="bg-gray-100 p-6 min-h-screen">
       <div className="container mx-auto max-w-full p-6 rounded-lg shadow-lg bg-white">
         <h2 className="text-3xl font-bold text-black mb-6">Task Details</h2>
+        
         {!isEditing && (
           <Button
+            className="absolute top-14 right-14  bg-[#8f89ee] border  px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center"
             onClick={() => setIsEditing(true)}
-            className="absolute top-14 right-14 text-black bg-transparent border border-black px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center"
           >
             <FaEdit className="mr-2" /> Edit
           </Button>
@@ -200,13 +201,14 @@ const TaskDetails = () => {
           description={description}
           setDescription={setDescription}
           projects={projects}
-          project={projectId}
+          projectId={projectId}
           setProject={setProjectId}
           selectedProjectName={selectedProject ? selectedProject.name : ""}
           disable={!isEditing}
         />
 
         <SelectionMethod
+
           selectionMethod={recurring ? "Recurring" : "For Now"}
           handleSelectionMethodChange={(method) =>
             setRecurring(method === "Recurring")
