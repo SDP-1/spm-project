@@ -57,7 +57,7 @@ const Newrepo = () => {
 
       if (response.ok) {
         console.log("Files saved to Firebase and repository URL updated");
-        navigate("/repodashboard");
+        navigate("/displayproj");
       } else {
         throw new Error("Failed to save files to Firebase");
       }

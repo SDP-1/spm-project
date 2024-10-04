@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaLock, FaUnlock } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Createrepo = () => {
   const [projectName, setProjectName] = useState('');
@@ -7,6 +8,7 @@ const Createrepo = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [authorName, setAuthorName] = useState('');
   const [repositoryName, setRepositoryName] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,12 +38,15 @@ const Createrepo = () => {
       alert('Project created successfully!');
       console.log(data);
 
-      // Optionally clear the form
+      // Clear the form
       setProjectName('');
       setProjectDetails('');
       setIsPublic(true);
       setAuthorName('');
       setRepositoryName('');
+
+      // Navigate to /displayproj after successfully creating the project
+      navigate('/displayproj');
     } catch (error) {
       alert('Failed to create the project.');
       console.error('There was an error creating the project!', error);
@@ -49,42 +54,39 @@ const Createrepo = () => {
   };
 
   return (
-    <div 
-      className="max-w-lg mx-auto p-6 bg-[#e6f3f8] shadow-md rounded-lg"
-      style={{ fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace' }}
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
+    <div
+      className="max-w-lg mx-auto p-8 bg-white shadow-lg rounded-2xl border border-gray-300 "
+      style={{ fontFamily: 'Inter, sans-serif' }} // Using a modern sans-serif font
     >
-      <h1 className="text-3xl font-bold mb-6">Create Project</h1>
+      <h1 className="text-2xl font-title mb-6">Create Project</h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectName">
-            Project Name
-          </label>
+        {/* Project Name */}
+        <div className="mb-4">
+          <label className="block text-lg font-medium text-black mb-2">Project Name</label>
           <input
             type="text"
-            id="projectName"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-neutral-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="projectDetails">
-            Project Description
-          </label>
+        {/* Project Description */}
+        <div className="mb-4">
+          <label className="block text-lg font-medium text-black mb-2">Project Description</label>
           <textarea
-            id="projectDetails"
             value={projectDetails}
             onChange={(e) => setProjectDetails(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
-            rows="6"
+            className="w-full px-4 py-2 h-[100px] border border-neutral-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             required
           />
         </div>
 
+        {/* Access */}
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2">Access</label>
+          <label className="block text-lg font-medium text-black mb-2">Access</label>
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
               <input
@@ -95,8 +97,8 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(true)}
                 className="mr-2"
               />
-              <FaUnlock />
-              <label htmlFor="public" className="ml-2">Public</label>
+              <FaUnlock className="text-[#41889e]" />
+              <label htmlFor="public" className="ml-2 text-black font-medium">Public</label>
             </div>
             <div className="flex items-center">
               <input
@@ -107,47 +109,45 @@ const Createrepo = () => {
                 onChange={() => setIsPublic(false)}
                 className="mr-2"
               />
-              <FaLock />
-              <label htmlFor="private" className="ml-2">Private</label>
+              <FaLock className="text-[#41889e]" />
+              <label htmlFor="private" className="ml-2 text-black font-medium">Private</label>
             </div>
           </div>
         </div>
 
+        {/* Author Name */}
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="authorName">
-            Author Name
-          </label>
+          <label className="block text-lg font-medium text-black mb-2">Author Name</label>
           <input
             type="text"
-            id="authorName"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
         </div>
 
+        {/* Repository Name */}
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="repositoryName">
-            Repository Name
-          </label>
+          <label className="block text-lg font-medium text-black mb-2">Repository Name</label>
           <input
             type="text"
-            id="repositoryName"
             value={repositoryName}
             onChange={(e) => setRepositoryName(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full px-4 py-3 bg-[#41889e] text-white font-bold rounded-md hover:bg-[#357a8d]"
+          className="w-full py-3 bg-[#4F46E5] text-white font-semibold rounded-2xl hover:bg-[#357a8d]"
         >
           Create Project
         </button>
       </form>
+    </div>
     </div>
   );
 };
