@@ -8,7 +8,7 @@ const ToolSelector = ({
   disable,
 }) => (
   <div className="mb-4">
-    <label className="block text-neutral-700 text-sm font-bold mb-2">
+    <label className="block text-gray-800 text-sm font-semibold mb-2">
       Select Tools
     </label>
     <div className="flex flex-wrap gap-2">
@@ -17,9 +17,9 @@ const ToolSelector = ({
           key={tool.name}
           className={`${
             selectedTools.includes(tool.name)
-              ? "bg-[#4F46E5] text-white"
-              : "bg-neutral-100 text-neutral-700"
-          } hover:bg-[#8f89ee] hover:text-white`}
+              ? "bg-blue-600 text-white border-2 border-blue-800 shadow-md" // Selected state with border
+              : "bg-gray-300 text-black opacity-75" // Unselected state with reduced opacity
+          } transition-colors`}
           onClick={() => !disable && handleToolSelection(tool.name)}
           disable={disable}
         >

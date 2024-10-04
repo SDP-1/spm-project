@@ -12,7 +12,7 @@ const MetricSelector = ({
     {tools
       .filter((tool) => selectedTools.includes(tool.name))
       .map((tool) => (
-        <div key={tool.name} className="mb-4">
+        <div key={tool.name} className="mb-4 p-3 border rounded-lg shadow-md hover:shadow-lg transition-shadow">
           <h4 className="text-lg font-semibold mb-2">{tool.name}</h4>
           {tool.metrics.map((metric) => (
             <div key={metric} className="mb-2 flex items-center">
@@ -25,12 +25,12 @@ const MetricSelector = ({
                 onChange={() =>
                   !disable && handleMetricChange(tool.name, metric)
                 }
-                className="mr-2"
+                className={`mr-2 ${disable ? 'cursor-not-allowed' : ''}`}
                 disabled={disable}
               />
               <label
                 htmlFor={`${tool.name}-${metric}`}
-                className="text-gray-700"
+                className={`text-gray-700 ${disable ? 'opacity-50' : ''}`}
               >
                 {metric}
               </label>

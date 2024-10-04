@@ -1,5 +1,5 @@
 import React from "react";
-import { FaChevronDown } from "react-icons/fa"; // Import the dropdown icon
+import { FaChevronDown } from "react-icons/fa";
 
 const TaskForm = ({
   taskName,
@@ -12,10 +12,9 @@ const TaskForm = ({
   disable,
 }) => (
   <>
-    
     <div className="mb-4">
       <label
-        className="block text-neutral-700 text-sm font-bold mb-2"
+        className="block text-gray-800 text-sm font-semibold mb-2"
         htmlFor="taskName"
       >
         Task Name
@@ -23,7 +22,9 @@ const TaskForm = ({
       <input
         type="text"
         id="taskName"
-        className="shadow appearance-none border rounded-md w-full py-2 px-3 text-neutral-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+        }`}
         value={taskName}
         onChange={(e) => !disable && setTaskName(e.target.value)}
         disabled={disable}
@@ -33,14 +34,16 @@ const TaskForm = ({
 
     <div className="mb-4">
       <label
-        className="block text-neutral-700 text-sm font-bold mb-2"
+        className="block text-gray-800 text-sm font-semibold mb-2"
         htmlFor="description"
       >
         Description
       </label>
       <textarea
         id="description"
-        className="shadow appearance-none border rounded-md w-full py-2 px-3 text-neutral-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+        }`}
         rows="4"
         value={description}
         onChange={(e) => !disable && setDescription(e.target.value)}
@@ -51,7 +54,7 @@ const TaskForm = ({
 
     <div className="mb-4 relative">
       <label
-        className="block text-neutral-700 text-sm font-bold mb-2"
+        className="block text-gray-800 text-sm font-semibold mb-2"
         htmlFor="projectDropdown"
       >
         Select Project
@@ -60,7 +63,9 @@ const TaskForm = ({
         id="projectDropdown"
         value={projectId}
         onChange={(e) => !disable && setProject(e.target.value)}
-        className="shadow appearance-none border rounded-md w-full py-2 px-3 text-neutral-700 leading-tight focus:outline-none focus:shadow-outline pr-10"
+        className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 ${
+          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+        }`}
         disabled={disable}
       >
         <option value="">Select a project</option>

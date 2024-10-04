@@ -1,12 +1,12 @@
 import React from "react";
-import TaskScheduler from "../pages/TaskScheduler"; // Import your TaskScheduler
+import TaskScheduler from "../pages/TaskScheduler";
 
 const TaskModal = ({ isOpen, onClose, refreshTasks }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-3xl h-[80%] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-3xl h-[80%] overflow-y-auto transition-transform transform-gpu scale-105">
         <div className="sticky top-0 bg-white z-10 p-6 border-b border-gray-300">
           <button
             onClick={onClose}
@@ -15,9 +15,9 @@ const TaskModal = ({ isOpen, onClose, refreshTasks }) => {
           >
             &times;
           </button>
-          <h2 className="text-2xl font-bold text-[#4F46E5]">Add New Task</h2>
+          <h2 className="text-2xl font-bold text-blue-600">Add New Task</h2>
         </div>
-        <div className="p-2">
+        <div className="p-4">
           <TaskScheduler onClose={onClose} refreshTasks={refreshTasks} />
         </div>
       </div>

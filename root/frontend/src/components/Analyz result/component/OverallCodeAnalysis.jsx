@@ -39,7 +39,7 @@ const OverallCodeAnalysis = ({ data }) => {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Overall Code Metrics</h2>
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-transparent  p-4 rounded-lg ">
         <Stats data={overallMetrics} />
       </div>
     </div>

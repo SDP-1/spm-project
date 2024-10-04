@@ -104,39 +104,37 @@ const StatusPage = () => {
   };
 
   return (
-    <div className="relative p-6 bg-gray-100 min-h-screen">
+    <div className="relative p-6 bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen">
+      {/* Header Section */}
+      <div className="fixed top-0 w-full bg-gradient-to-r from-blue-50 to-blue-100  z-50 p-4 rounded-b-lg">
+        <h1 className="text-2xl font-bold text-gray-800">File Analysis</h1>
+        {/* Tab Navigation */}
+        <nav className="flex space-x-4 text-blue-600 mb-2">
+          <a
+            href="#"
+            onClick={() => setActiveTab("fileByFile")}
+            className={`hover:underline ${
+              activeTab === "fileByFile" ? "font-semibold underline" : ""
+            }`}
+          >
+            File By File
+          </a>
+          <a
+            href="#"
+            onClick={() => setActiveTab("overallCode")}
+            className={`hover:underline ${
+              activeTab === "overallCode" ? "font-semibold underline" : ""
+            }`}
+          >
+            Overall Code
+          </a>
+        </nav>
+      </div>
       
-      {/* Ensure the parent has min-h-screen to accommodate fixed elements */}
-      <div className="relative" >
-      <div className="fixed pt-5 top-0 w-full bg-gray-100 z-50 "> {/* Fixed header */}
-      <h1 className="text-2xl font-bold mb-6">File Analysis</h1>
-      {/* Tab Navigation */}
-      <nav className="flex space-x-4 text-[#4F46E5] mb-6">
-        <a
-          href="#"
-          onClick={() => setActiveTab("fileByFile")}
-          className={`hover:underline ${
-            activeTab === "fileByFile" ? "font-semibold underline" : ""
-          }`}
-        >
-          File By File
-        </a>
-        <a
-          href="#"
-          onClick={() => setActiveTab("overallCode")}
-          className={`hover:underline ${
-            activeTab === "overallCode" ? "font-semibold underline" : ""
-          }`}
-        >
-          Overall Code
-        </a>
-      </nav>
-      </div>
-      </div>
       {/* Tab Content */}
       {activeTab === "fileByFile" ? (
-        <div className="flex mt-28 ">
-          <div className="fixed  w-1/4">
+        <div className="flex mt-20">
+          <div className="fixed w-1/4 bg-transparent rounded-lg  overflow-y-auto h-[calc(100vh-100px)]">
             <FileList
               files={metricsData.results}
               selectedFiles={selectedFiles}
@@ -155,19 +153,20 @@ const StatusPage = () => {
           </div>
         </div>
       ) : (
-        <div  className="mt-28">
+        <div className="mt-20">
           <OverallCodeAnalysis data={metricsData.results} />
         </div>
-        
       )}
+      
       {/* Fixed Button to Print Document */}
       <button
         onClick={handleOpenModal}
-        className="fixed bottom-4 right-4 bg-[#4F46E5] text-white px-4 py-2 rounded-lg shadow-lg hover:bg-[#8f89ee] focus:outline-none flex items-center space-x-2 z-50"
+        className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none flex items-center space-x-2 z-50"
       >
         <div className="text-white text-xl font-bold">+</div>
         <span>Print Document</span>
       </button>
+      
       {/* File Selection Modal */}
       <FileSelectModal
         isOpen={isModalOpen}

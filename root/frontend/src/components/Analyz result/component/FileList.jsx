@@ -11,9 +11,11 @@ const FileList = ({ files, selectedFiles, onSelectFile }) => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md min-w-[250px] max-w-[300px]">
+    <div className="bg-transparent p-6 rounded-lg shadow-md min-w-[250px] max-w-[300px]">
       {/* Set min and max width */}
-      <label className="text-xl block mb-4 font-semibold text-neutral-700">Select File</label> {/* Add label */}
+      <label className="text-xl block mb-4 font-semibold text-neutral-700">
+        Select File
+      </label>
       <ul>
         {Object.keys(files).map((file) => (
           <li

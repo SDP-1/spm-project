@@ -180,17 +180,19 @@ const TaskDetails = () => {
   const selectedProject = projects.find((proj) => proj.id === projectId);
 
   return (
-    <div className="bg-gray-100 p-6 min-h-screen">
-      <div className="container mx-auto max-w-full p-6 rounded-lg shadow-lg bg-white">
-        <h2 className="text-3xl font-bold text-black mb-6">Task Details</h2>
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-6 min-h-screen">
+      <div className="container mx-auto max-w-3xl p-8 rounded-lg shadow-lg bg-white">
+        <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">Task Details</h2>
         
         {!isEditing && (
-          <Button
-            className="absolute top-14 right-14  bg-[#8f89ee] border  px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center"
-            onClick={() => setIsEditing(true)}
-          >
-            <FaEdit className="mr-2" /> Edit
-          </Button>
+           <button
+           aria-label="Edit"
+           className="absolute top-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+           onClick={() => setIsEditing(true)}
+         >
+           <FaEdit className="mr-2 inline" /> {/* Ensuring inline display for better alignment */}
+           Edit
+         </button>
         )}
 
         {error && <ErrorMessage error={error} />}
@@ -208,7 +210,6 @@ const TaskDetails = () => {
         />
 
         <SelectionMethod
-
           selectionMethod={recurring ? "Recurring" : "For Now"}
           handleSelectionMethodChange={(method) =>
             setRecurring(method === "Recurring")
@@ -252,13 +253,15 @@ const TaskDetails = () => {
           </>
         )}
 
-        <div className="text-sm text-gray-500 mb-4 mt-6">
-          <p>Created at: {new Date(task.createdAt).toLocaleString()}</p>
+        <div className="text-sm text-gray-600 mb-4 mt-6">
+          <p>Created at: <strong>{new Date(task.createdAt).toLocaleString()}</strong></p>
           <p>
             Updated at:{" "}
-            {isEditing
-              ? new Date().toLocaleString()
-              : new Date(task.updatedAt).toLocaleString()}
+            <strong>
+              {isEditing
+                ? new Date().toLocaleString()
+                : new Date(task.updatedAt).toLocaleString()}
+            </strong>
           </p>
         </div>
 
@@ -266,7 +269,7 @@ const TaskDetails = () => {
           <div className="flex justify-between items-center mt-6">
             <Button
               onClick={handleUpdate}
-              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center ${
+              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center transition-all duration-300 ${
                 isUpdating ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isUpdating}
@@ -283,7 +286,7 @@ const TaskDetails = () => {
             </Button>
             <Button
               onClick={handleCancel}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center"
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 flex items-center transition-all duration-300"
             >
               Cancel
             </Button>
@@ -291,10 +294,10 @@ const TaskDetails = () => {
         )}
 
         {!isEditing && (
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex justify-center items-center mt-6">
             <Button
               onClick={handleDelete}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center transition-all duration-300"
             >
               <FaTrashAlt className="mr-2" /> Delete
             </Button>
