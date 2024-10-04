@@ -19,16 +19,12 @@ const TaskDetails = () => {
   const [error, setError] = useState("");
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
-  const [project, setProject] = useState("");
-  const [projects, setProjects] = useState([
-    "Option 1",
-    "Option 2",
-    "Option 3",
-  ]); // Example project options
+  const [projectId, setProjectId] = useState("");
+  const [projects, setProjects] = useState([]);
   const [recurring, setRecurring] = useState(false);
   const [frequencyType, setFrequencyType] = useState("Daily");
   const [frequencyValue, setFrequencyValue] = useState(8);
-  const [specificDate, setSpecificDate] = useState("");
+  const [SpecificTime, setSpecificTime] = useState("");
   const [selectedTools, setSelectedTools] = useState([]);
   const [toolMetrics, setToolMetrics] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -44,13 +40,13 @@ const TaskDetails = () => {
         setInitialTask(taskData);
         setTaskName(taskData.taskName);
         setDescription(taskData.description);
-        setProject(taskData.project || ""); // Set project from task data
+        setProjectId(taskData.projectId || "");
         setRecurring(taskData.recurring);
         setFrequencyType(taskData.frequencyType || "Daily");
         setFrequencyValue(taskData.frequencyValue || 8);
-        setSpecificDate(
-          taskData.specificDate
-            ? new Date(taskData.specificDate).toISOString().slice(0, 16)
+        setSpecificTime(
+          taskData.frequencyType === "SpecificTime" && taskData.SpecificTime
+            ? taskData.SpecificTime // Use it directly for time input
             : ""
         );
         setSelectedTools(taskData.selectedTools || []);
@@ -61,7 +57,18 @@ const TaskDetails = () => {
       }
     };
 
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get(`/api/projects`);
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setError("Failed to fetch projects");
+      }
+    };
+
     fetchTask();
+    fetchProjects();
   }, [id]);
 
   const handleUpdate = async () => {
@@ -71,13 +78,11 @@ const TaskDetails = () => {
         await axios.put(`/api/task/${id}`, {
           taskName,
           description,
-          project, // Include project in update payload
+          projectId,
           recurring,
           frequencyType,
           frequencyValue,
-          specificDate: specificDate
-            ? new Date(specificDate).toISOString()
-            : "",
+          SpecificTime: SpecificTime,
           selectedTools,
           toolMetrics,
         });
@@ -118,13 +123,13 @@ const TaskDetails = () => {
     if (initialTask) {
       setTaskName(initialTask.taskName);
       setDescription(initialTask.description);
-      setProject(initialTask.project || "");
+      setProjectId(initialTask.projectId || "");
       setRecurring(initialTask.recurring);
       setFrequencyType(initialTask.frequencyType || "Daily");
       setFrequencyValue(initialTask.frequencyValue || 8);
-      setSpecificDate(
-        initialTask.specificDate
-          ? new Date(initialTask.specificDate).toISOString().slice(0, 16)
+      setSpecificTime(
+        initialTask.SpecificTime
+          ? new Date(initialTask.SpecificTime).toISOString().slice(0, 16)
           : ""
       );
       setSelectedTools(initialTask.selectedTools || []);
@@ -172,30 +177,35 @@ const TaskDetails = () => {
     }));
   };
 
+  const selectedProject = projects.find((proj) => proj.id === projectId);
+
   return (
-    <div className="bg-gray-100 p-6 min-h-screen">
-      <div className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg relative">
-        <h2 className="text-2xl font-bold text-black mb-4">Task Details</h2>
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-6 min-h-screen">
+      <div className="container mx-auto max-w-3xl p-8 rounded-lg shadow-lg bg-white">
+        <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">Task Details</h2>
+        
         {!isEditing && (
-          <Button
-            onClick={() => setIsEditing(true)}
-            className="absolute top-4 right-4 text-black bg-transparent border border-black px-2 py-1 rounded-lg hover:bg-gray-200 flex items-center"
-          >
-            <FaEdit className="mr-1" /> Edit
-          </Button>
+           <button
+           aria-label="Edit"
+           className="absolute top-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+           onClick={() => setIsEditing(true)}
+         >
+           <FaEdit className="mr-2 inline" /> {/* Ensuring inline display for better alignment */}
+           Edit
+         </button>
         )}
 
         {error && <ErrorMessage error={error} />}
 
-        {/* Replace individual inputs with TaskForm */}
         <TaskForm
           taskName={taskName}
           setTaskName={setTaskName}
           description={description}
           setDescription={setDescription}
           projects={projects}
-          project={project}
-          setProject={setProject}
+          projectId={projectId}
+          setProject={setProjectId}
+          selectedProjectName={selectedProject ? selectedProject.name : ""}
           disable={!isEditing}
         />
 
@@ -213,8 +223,8 @@ const TaskDetails = () => {
             setFrequencyType={setFrequencyType}
             frequencyValue={frequencyValue}
             setFrequencyValue={setFrequencyValue}
-            specificDate={specificDate}
-            setSpecificDate={setSpecificDate}
+            SpecificTime={SpecificTime}
+            setSpecificTime={setSpecificTime}
             disable={!isEditing}
           />
         )}
@@ -243,21 +253,23 @@ const TaskDetails = () => {
           </>
         )}
 
-        <div className="text-sm text-gray-500 mb-4">
-          <p>Created at: {new Date(task.createdAt).toLocaleString()}</p>
+        <div className="text-sm text-gray-600 mb-4 mt-6">
+          <p>Created at: <strong>{new Date(task.createdAt).toLocaleString()}</strong></p>
           <p>
             Updated at:{" "}
-            {isEditing
-              ? new Date().toLocaleString()
-              : new Date(task.updatedAt).toLocaleString()}
+            <strong>
+              {isEditing
+                ? new Date().toLocaleString()
+                : new Date(task.updatedAt).toLocaleString()}
+            </strong>
           </p>
         </div>
 
         {isEditing && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-6">
             <Button
               onClick={handleUpdate}
-              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center ${
+              className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center transition-all duration-300 ${
                 isUpdating ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isUpdating}
@@ -274,7 +286,7 @@ const TaskDetails = () => {
             </Button>
             <Button
               onClick={handleCancel}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center"
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 flex items-center transition-all duration-300"
             >
               Cancel
             </Button>
@@ -282,10 +294,10 @@ const TaskDetails = () => {
         )}
 
         {!isEditing && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-center items-center mt-6">
             <Button
               onClick={handleDelete}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center transition-all duration-300"
             >
               <FaTrashAlt className="mr-2" /> Delete
             </Button>

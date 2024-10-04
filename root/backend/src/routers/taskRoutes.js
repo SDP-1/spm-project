@@ -2,12 +2,20 @@ const express = require("express");
 const router = express.Router();
 const Task = require("../models/task");
 
+// Correctly import scheduleTask from the automation module
+const { scheduleTask } = require("../automation/automatedTaskExecution");
+const { clearScheduledTask } = require("../automation/automatedTaskExecution");
+
 // Route to create a new task
 router.post("/task/add", async (req, res) => {
   try {
     const taskData = req.body;
     const newTask = new Task(taskData);
     await newTask.save();
+
+    // Schedule the newly created task
+    scheduleTask(newTask);
+
     res.status(200).json({ message: "Task scheduled successfully!" });
   } catch (error) {
     console.error("Error saving task:", error);
@@ -53,6 +61,8 @@ router.put("/task/:id", async (req, res) => {
     });
 
     if (updatedTask) {
+      // Reschedule the task after updating
+      scheduleTask(updatedTask);
       res
         .status(200)
         .json({ message: "Task updated successfully!", task: updatedTask });
@@ -65,6 +75,7 @@ router.put("/task/:id", async (req, res) => {
   }
 });
 
+// Route to update star status
 router.put("/task/star/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
@@ -99,6 +110,8 @@ router.delete("/task/:id", async (req, res) => {
     const taskId = req.params.id;
     const deletedTask = await Task.findByIdAndDelete(taskId);
     if (deletedTask) {
+      // remove the task after deleting
+      clearScheduledTask(deletedTask._id); // Stop the cron job associated with the deleted task
       res.status(200).json({ message: "Task deleted successfully!" });
     } else {
       res.status(404).json({ message: "Task not found" });

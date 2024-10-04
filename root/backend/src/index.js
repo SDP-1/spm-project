@@ -6,6 +6,7 @@ const taskRoutes = require("./routers/taskRoutes");
 const projectRoutes = require('./routers/projectRoutes'); 
 const http = require("http");
 const { Server } = require("socket.io");
+const { startTaskAutomation } = require("./automation/automatedTaskExecution");
 
 dotenv.config();
 
@@ -47,6 +48,9 @@ app.use('/api/projects', projectRoutes);
 // app.listen(5000, () => {
 //   console.log('Server running on port 5000');
 // });
+
+// Start task automation
+startTaskAutomation();
 
 
 io.on("connection", (socket) => {

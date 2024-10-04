@@ -1,30 +1,34 @@
 import React from "react";
 import Button from "./Button";
 
-const SelectionMethod = ({ selectionMethod, handleSelectionMethodChange, disable }) => (
+const SelectionMethod = ({
+  selectionMethod,
+  handleSelectionMethodChange,
+  disable,
+}) => (
   <div className="mb-4">
-    <label className="block text-black text-sm font-bold mb-2">
+    <label className="block text-gray-800 text-sm font-semibold mb-2">
       For Now or Recurring
     </label>
     <div className="flex gap-4">
       <Button
         onClick={() => !disable && handleSelectionMethodChange("For Now")}
-        className={`px-4 py-2 rounded-lg ${
+        className={`${
           selectionMethod === "For Now"
-            ? "bg-[#41889e] text-white"
-            : "bg-[#91e5ff] text-[#41889e]"
-        } hover:bg-[#6eceeb]`}
+            ? "bg-blue-600 text-white border-2 border-blue-800 shadow-md" // Selected state with border
+            : "bg-gray-300 text-black opacity-75" // Unselected state with reduced opacity
+        } transition-colors`}
         disable={disable}
       >
         For Now
       </Button>
       <Button
         onClick={() => !disable && handleSelectionMethodChange("Recurring")}
-        className={`px-4 py-2 rounded-lg ${
+        className={`${
           selectionMethod === "Recurring"
-            ? "bg-[#41889e] text-white"
-            : "bg-[#91e5ff] text-[#41889e]"
-        } hover:bg-[#6eceeb]`}
+            ? "bg-blue-600 text-white border-2 border-blue-800 shadow-md" // Selected state with border
+            : "bg-gray-300 text-black opacity-75" // Unselected state with reduced opacity
+        } transition-colors`}
         disable={disable}
       >
         Recurring
