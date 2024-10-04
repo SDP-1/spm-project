@@ -142,7 +142,7 @@ const Createrepo = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full py-3 bg-[#41889e] text-white font-semibold rounded-2xl hover:bg-[#357a8d]"
+          className="w-full py-3 bg-[#4F46E5] text-white font-semibold rounded-2xl hover:bg-[#357a8d]"
         >
           Create Project
         </button>

@@ -5,6 +5,7 @@ import {
   FaSort,
   FaHeart,
   FaEdit,
+  FaSearch
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import CloneModal from './CloneModal';
@@ -151,13 +152,16 @@ const Displayproj = () => {
     
     <div className="container mx-auto p-4 relative bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
       <div className="flex mb-12 space-x-4 items-center">
-        <input
-          type="text"
-          placeholder="Search projects..."
-          className="w-1/4 px-4 py-2 border rounded-full focus:outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="relative w-1/4">
+      <input
+        type="text"
+        placeholder="Search projects..."
+        className="w-full px-4 py-2 border rounded-full focus:outline-none pl-10" // Add padding to the left for the icon
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <FaSearch className="absolute left-3 top-3 text-gray-400" /> {/* Position the icon inside the input */}
+    </div>
         <button className="flex items-center px-4 py-2 border rounded-full bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
           <FaSort className="mr-2" />
           Sort By Empty Projects
