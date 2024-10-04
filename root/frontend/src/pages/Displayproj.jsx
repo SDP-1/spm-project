@@ -185,7 +185,7 @@ const Displayproj = () => {
   {project.repositoryUrl && project.repositoryUrl.trim() !== "" ? (
     project.repositoryUrl
   ) : (
-    <span style={{ color: "red" }}>No repo cloned</span>
+    <span >No repo cloned</span>
   )}
 </p>
 
@@ -210,7 +210,7 @@ const Displayproj = () => {
                 onClose={() => setIsModalOpen(false)} // Close the modal when the user clicks outside or presses close
                 onClone={handleClone} // Pass the handleClone function to execute cloning
               />
-{project.repositoryUrl && project.repositoryUrl.trim() === "No repo cloned" && (
+{ project.repositoryUrl.trim() === "" && (
     <a
       onClick={() => navigate(`/newrepo/${project._id}`)} // Use project ID to navigate
       className="flex items-center px-4 py-2 text-[#41889e] hover:shadow-md hover:shadow-gray-400 focus:outline-none transition-shadow duration-300 cursor-pointer"
