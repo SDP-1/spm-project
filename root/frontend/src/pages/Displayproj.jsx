@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   FaEllipsisV,
   FaArrowRight,
-  FaFilter,
+  FaSort,
   FaHeart,
   FaEdit,
 } from "react-icons/fa";
@@ -159,8 +159,8 @@ const Displayproj = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button className="flex items-center px-4 py-2 border rounded-full bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
-          <FaFilter className="mr-2" />
-          Filter
+          <FaSort className="mr-2" />
+          Sort By Empty Projects
         </button>
         <span className="flex items-center text-[#41889e] font-semibold">
           {filteredProjects.length} Project
