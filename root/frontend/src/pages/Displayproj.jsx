@@ -149,11 +149,11 @@ const Displayproj = () => {
 
   return (
     <div className="container mx-auto p-4 relative">
-      <div className="flex mb-4 space-x-4 items-center">
+      <div className="flex mb-12 space-x-4 items-center">
         <input
           type="text"
           placeholder="Search projects..."
-          className="w-1/4 px-4 py-2 border rounded-md focus:outline-none"
+          className="w-1/4 px-4 py-2 border rounded-full focus:outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -201,7 +201,7 @@ const Displayproj = () => {
                 className="px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent flex justify-center items-center"
                 style={{ width: '150px' }} // Reduce the button width
               >
-                Clone Locally
+                Add File Path
               </button>
               {/* Render CloneModal and pass required props */}
               <CloneModal
