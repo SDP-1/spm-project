@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
+import ProjectDetailsPrint from "./ProjectDetailsPrint";
+
 import {
   FaEllipsisV,
   FaArrowRight,
   FaSort,
   FaHeart,
   FaEdit,
-  FaSearch
+  FaSearch,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import CloneModal from './CloneModal';
+import CloneModal from "./CloneModal";
+import { FaPrint } from "react-icons/fa"; // Import the print icon from react-icons
 
 const Displayproj = () => {
   const [projects, setProjects] = useState([]);
@@ -18,10 +21,15 @@ const Displayproj = () => {
   const [files, setFiles] = useState([]);
   const [repoName, setRepoName] = useState("");
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
-  const [editedProject, setEditedProject] = useState({ projectName: "", projectDetails: "", repositoryName: "" }); // State for edited project
+  const [editedProject, setEditedProject] = useState({
+    projectName: "",
+    projectDetails: "",
+    repositoryName: "",
+  }); // State for edited project
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
+  const [activeProjectId, setActiveProjectId] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -45,13 +53,13 @@ const Displayproj = () => {
   };
 
   // Function to handle cloning logic
-  const handleClone = async (url, folderPath) => { // Accept folderPath as an argument
+  const handleClone = async (url, folderPath) => {
+    // Accept folderPath as an argument
     console.log("Cloning repository:", url);
     console.log("Cloning to folder:", folderPath); // Log the folder path
     // Simulate cloning process with a 2-second delay
     return new Promise((resolve) => setTimeout(resolve, 2000));
   };
-
 
   const handleDelete = async (projectId) => {
     try {
@@ -134,7 +142,9 @@ const Displayproj = () => {
       // Update the projects state with the updated project
       setProjects((prevProjects) =>
         prevProjects.map((project) =>
-          project._id === selectedProjectId ? { ...project, ...editedProject } : project
+          project._id === selectedProjectId
+            ? { ...project, ...editedProject }
+            : project
         )
       );
 
@@ -145,31 +155,64 @@ const Displayproj = () => {
     }
   };
 
-
-
-
   return (
-    
     <div className="container mx-auto p-4 relative bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
-      <div className="flex mb-12 space-x-4 items-center">
-      <div className="relative w-1/4">
-      <input
-        type="text"
-        placeholder="Search projects..."
-        className="w-full px-4 py-2 border rounded-full focus:outline-none pl-10" // Add padding to the left for the icon
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <FaSearch className="absolute left-3 top-3 text-gray-400" /> {/* Position the icon inside the input */}
-    </div>
-        <button className="flex items-center px-4 py-2 border rounded-full bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
-          <FaSort className="mr-2" />
-          Sort By Empty Projects
-        </button>
-        <span className="flex items-center text-[#41889e] font-semibold">
-          {filteredProjects.length} Project
-          {filteredProjects.length !== 1 ? "s" : ""}
-        </span>
+      <div className="flex justify-between mb-12 items-center">
+        {/* Left side content */}
+        <div className="flex space-x-4 items-center">
+          {/* Search input */}
+          <div className="relative w-1/4">
+            <input
+              type="text"
+              placeholder="Search projects..."
+              className="w-full px-4 py-2 border rounded-full focus:outline-none pl-10" // Padding for the search icon
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />{" "}
+            {/* Search icon */}
+          </div>
+
+          {/* Sort by empty projects button */}
+          <button className="flex items-center px-4 py-2 border rounded-full bg-[#41889e] text-white hover:bg-[#357a8d] focus:outline-none">
+            <FaSort className="mr-2" />
+            Sort By Empty Projects
+          </button>
+
+          {/* Project count */}
+          <span className="flex items-center text-[#41889e] font-semibold">
+            {filteredProjects.length} Project
+            {filteredProjects.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Right side content */}
+        <div>
+          {/* Projects List */}
+          {filteredProjects.map((project) => (
+            <div key={project._id}>
+              {/* Render project details or any other content */}
+              <h3>{project.name}</h3>
+            </div>
+          ))}
+
+          {/* Button shown only once, outside the map */}
+          <button
+            onClick={() => setActiveProjectId(filteredProjects[0]?._id)} // Set the first project as default (or handle selecting another project)
+            className="flex items-center px-4 py-2 border border-[#41889e] text-[#41889e] hover:bg-[#41889e] hover:text-white rounded-md shadow transition-all duration-200"
+          >
+            <FaPrint className="mr-2" /> {/* Icon with margin right */}
+            Print Project Details
+          </button>
+
+          {/* Render the Print Modal only if there's an active project */}
+          {activeProjectId && (
+            <ProjectDetailsPrint
+              projectId={activeProjectId} // Pass the selected project ID
+              onClose={() => setActiveProjectId(null)} // Handle modal close
+            />
+          )}
+        </div>
       </div>
 
       {filteredProjects.map((project, index) => (
@@ -187,10 +230,11 @@ const Displayproj = () => {
 
               <p className="text-sm text-gray-500 mt-2">
                 <strong>Repository URL:</strong>{" "}
-                {project.repositoryUrl && project.repositoryUrl.trim() !== "" ? (
+                {project.repositoryUrl &&
+                project.repositoryUrl.trim() !== "" ? (
                   project.repositoryUrl
                 ) : (
-                  <span >No repo cloned</span>
+                  <span>No repo cloned</span>
                 )}
               </p>
               <div className="mt-2">
@@ -204,18 +248,13 @@ const Displayproj = () => {
                 </p>
               </div>
 
-
-
               {/* Conditionally render the "Add Repository" button */}
-
-
-
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setIsModalOpen(true)} // Open the modal on click
                 className="px-4 py-2 border border-transparent text-[#66b3b8] rounded-md transition duration-300 hover:border-[#66b3b8] hover:bg-transparent flex justify-center items-center"
-                style={{ width: '150px' }} // Reduce the button width
+                style={{ width: "150px" }} // Reduce the button width
               >
                 Add File Path
               </button>
@@ -252,7 +291,6 @@ const Displayproj = () => {
                 </button>
                 {dropdownVisible === index && (
                   <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-lg z-10">
-
                     <button
                       onClick={() => handleDelete(project._id)}
                       className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
@@ -289,7 +327,12 @@ const Displayproj = () => {
                 id="projectName"
                 className="w-full border rounded-md px-3 py-2"
                 value={editedProject.projectName}
-                onChange={(e) => setEditedProject({ ...editedProject, projectName: e.target.value })}
+                onChange={(e) =>
+                  setEditedProject({
+                    ...editedProject,
+                    projectName: e.target.value,
+                  })
+                }
               />
             </div>
             <div className="mt-4">
@@ -300,7 +343,12 @@ const Displayproj = () => {
                 id="projectDetails"
                 className="w-full border rounded-md px-3 py-2"
                 value={editedProject.projectDetails}
-                onChange={(e) => setEditedProject({ ...editedProject, projectDetails: e.target.value })}
+                onChange={(e) =>
+                  setEditedProject({
+                    ...editedProject,
+                    projectDetails: e.target.value,
+                  })
+                }
               />
             </div>
             <div className="mt-4">
@@ -312,7 +360,12 @@ const Displayproj = () => {
                 id="repositoryName"
                 className="w-full border rounded-md px-3 py-2"
                 value={editedProject.repositoryName}
-                onChange={(e) => setEditedProject({ ...editedProject, repositoryName: e.target.value })}
+                onChange={(e) =>
+                  setEditedProject({
+                    ...editedProject,
+                    repositoryName: e.target.value,
+                  })
+                }
               />
             </div>
             {errorMessage && (
