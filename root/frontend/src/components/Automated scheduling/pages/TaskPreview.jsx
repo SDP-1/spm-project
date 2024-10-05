@@ -18,6 +18,7 @@ const TaskPreview = () => {
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State to control TaskDetailModal visibility
   const [taskToPrint, setTaskToPrint] = useState(null); // Track the task to print
+  const [taskToDelete, setTaskToDelete] = useState(null); // State to track the task to delete
 
   // Fetch and sort tasks
   useEffect(() => {
@@ -120,24 +121,29 @@ const TaskPreview = () => {
   };
 
   // Handle task deletion
-  const handleDelete = async (taskId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task? This action cannot be recovered."
-    );
+  const handleDelete = async () => {
+    if (taskToDelete) {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this task? This action cannot be recovered."
+      );
 
-    if (confirmDelete) {
-      try {
-        await axios.delete(`/api/task/${taskId}`);
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task._id !== taskId)
-        );
-        setFilteredTasks((prevFilteredTasks) =>
-          prevFilteredTasks.filter((task) => task._id !== taskId)
-        );
-        setShowMenu(null); // Close menu after delete
-      } catch (error) {
-        setError("Failed to delete task");
+      if (confirmDelete) {
+        try {
+          await axios.delete(`/api/task/${taskToDelete}`);
+          setTasks((prevTasks) =>
+            prevTasks.filter((task) => task._id !== taskToDelete)
+          );
+          setFilteredTasks((prevFilteredTasks) =>
+            prevFilteredTasks.filter((task) => task._id !== taskToDelete)
+          );
+          setShowMenu(null); // Close menu after delete
+        } catch (error) {
+          setError("Failed to delete task");
+        }
       }
+
+      // Reset taskToDelete after operation
+      setTaskToDelete(null);
     }
   };
 
@@ -255,8 +261,9 @@ const TaskPreview = () => {
                     <button
                       className="w-full text-left px-4 py-1 text-red-600 hover:bg-gray-100 text-xs"
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(task._id);
+                        e.stopPropagation(); // Prevent click event bubbling
+                        setTaskToDelete(task._id); // Set the task to delete
+                        handleDelete(); // Now call handleDelete
                       }}
                     >
                       Delete Task
