@@ -1,5 +1,7 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import Sidebar from "./components/Sidebar";
 import Newrepo from "./pages/Newrepo";
 import Createrepo from "./pages/Createrepo";
@@ -19,10 +21,9 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
-
-import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
-import { useEffect } from "react";
+import FloatingShape from "./components/User/FloatingShape";
+import LoadingSpinner from "./components/User/LoadingSpinner";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -52,99 +53,61 @@ const AdminProtectedRoute = ({ children }) => {
   return children;
 };
 
-
-// redirect authenticated users to the home page
+// Redirect authenticated users to the home page
 const RedirectAuthenticatedUser = ({ children }) => {
-const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
-if (isAuthenticated) {
-  return <Navigate to="/" replace />;
-}
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
-return children;
+  return children;
 };
 
-
 function App() {
+  const { isCheckingAuth, checkAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (isCheckingAuth) return <LoadingSpinner />;
+
   return (
     <Router>
-      <Sidebar>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-emerald-900 flex items-center justify-center relative overflow-hidden">
+        <FloatingShape color="bg-blue-500" size="w-64 h-64" top="-5%" left="10%" delay={0} />
+        <FloatingShape color="bg-emerald-500" size="w-48 h-48" top="70%" left="80%" delay={5} />
+        <FloatingShape color="bg-lime-500" size="w-32 h-32" top="40%" left="-10%" delay={2} />
+
         <Routes>
-          <Route path="/task/add" element={<TaskSheduler />} />
-          <Route path="/task/showAll" element={<TaskPreview />} />
-          <Route path="/task/:id" element={<TaskDetails />} />
-          <Route path="/analize/task/status" element={<StatusPage />} />
+          {/* Public Routes */}
+          <Route path="/signup" element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
+          <Route path="/login" element={<RedirectAuthenticatedUser><LoginPage /></RedirectAuthenticatedUser>} />
+          <Route path="/forgot-password" element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
+          <Route path="/reset-password/:token" element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
 
-          <Route path="/newrepo/:projectId" element={<Newrepo />} />
-          <Route path="/createrepo" element={<Createrepo />} />
-          <Route path="/displayproj" element={<Displayproj />} />
-          <Route path="/repodashboard" element={<Repodashboard />} />
-          <Route path="/analytics" element={<AnalyticsChart />} />
+          {/* Protected Routes with Sidebar */}
+          <Route path="/" element={<ProtectedRoute><Sidebar><DashboardPage /></Sidebar></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Sidebar><ProfilePage /></Sidebar></ProtectedRoute>} />
+          <Route path="/task/add" element={<ProtectedRoute><Sidebar><TaskSheduler /></Sidebar></ProtectedRoute>} />
+          <Route path="/task/showAll" element={<ProtectedRoute><Sidebar><TaskPreview /></Sidebar></ProtectedRoute>} />
+          <Route path="/task/:id" element={<ProtectedRoute><Sidebar><TaskDetails /></Sidebar></ProtectedRoute>} />
+          <Route path="/analize/task/status" element={<ProtectedRoute><Sidebar><StatusPage /></Sidebar></ProtectedRoute>} />
+          <Route path="/newrepo/:projectId" element={<ProtectedRoute><Sidebar><Newrepo /></Sidebar></ProtectedRoute>} />
+          <Route path="/createrepo" element={<ProtectedRoute><Sidebar><Createrepo /></Sidebar></ProtectedRoute>} />
+          <Route path="/displayproj" element={<ProtectedRoute><Sidebar><Displayproj /></Sidebar></ProtectedRoute>} />
+          <Route path="/repodashboard" element={<ProtectedRoute><Sidebar><Repodashboard /></Sidebar></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Sidebar><AnalyticsChart /></Sidebar></ProtectedRoute>} />
 
+          {/* Admin Routes */}
+          <Route path="/admin-dashboard" element={<AdminProtectedRoute><Sidebar><AdminDashboardPage /></Sidebar></AdminProtectedRoute>} />
+
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Sidebar>
-
-      <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <AdminProtectedRoute>
-              <AdminDashboardPage />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <RedirectAuthenticatedUser>
-              <SignUpPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <RedirectAuthenticatedUser>
-              <LoginPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <RedirectAuthenticatedUser>
-              <ForgotPasswordPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-
-        <Route
-          path="/reset-password/:token"
-          element={
-            <RedirectAuthenticatedUser>
-              <ResetPasswordPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        {/* catch all routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-
+        <Toaster />
+      </div>
     </Router>
   );
 }
