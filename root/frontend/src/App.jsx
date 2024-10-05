@@ -24,6 +24,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import { useAuthStore } from "./store/authStore";
 import FloatingShape from "./components/User/FloatingShape";
 import LoadingSpinner from "./components/User/LoadingSpinner";
+import AdminSidebar from "./components/User/AdminSidebar";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -101,7 +102,7 @@ function App() {
           <Route path="/analytics" element={<ProtectedRoute><Sidebar><AnalyticsChart /></Sidebar></ProtectedRoute>} />
 
           {/* Admin Routes */}
-          <Route path="/admin-dashboard" element={<AdminProtectedRoute><Sidebar><AdminDashboardPage /></Sidebar></AdminProtectedRoute>} />
+          <Route path="/admin-dashboard" element={<AdminProtectedRoute><AdminSidebar><AdminDashboardPage /></AdminSidebar></AdminProtectedRoute>} />
 
           {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />

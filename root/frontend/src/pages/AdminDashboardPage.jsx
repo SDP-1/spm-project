@@ -1,12 +1,9 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
 import axios from "axios";
 import { format } from 'date-fns';
 
 const AdminDashboardPage = () => {
-  const { logout } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
@@ -19,10 +16,6 @@ const AdminDashboardPage = () => {
   // New states for activities
   const [activities, setActivities] = useState([]);
   const [isActivitiesModalOpen, setIsActivitiesModalOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   // Fetch users from the backend
   useEffect(() => {
@@ -91,26 +84,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-
-  const handleDownloadUsers = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/auth/download-users", {
-        responseType: 'blob', // Important for handling binary data
-      });
-
-      // Create a URL for the blob response
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'users_report.csv'); // Change file name if needed
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading users:", error);
-    }
-  };
-
   const handleViewActivities = async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/auth/activities/${userId}`);
@@ -175,116 +148,88 @@ const AdminDashboardPage = () => {
   //   : [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800"
-    >
-      <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-emerald-600 text-transparent bg-clip-text">
-        Manage Users
-      </h2>
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl w-full mx-auto p-8 bg-white shadow-lg rounded-2xl border border-gray-300"
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center">Manage Users</h2>
 
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mb-4 p-3 bg-green-500 text-white rounded-lg text-center">
-          {successMessage}
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-4 p-3 bg-green-500 text-white rounded-lg text-center">
+            {successMessage}
+          </div>
+        )}
+
+        <div className="flex justify-between items-center mb-6">
+          <input
+            type="text"
+            placeholder="Search Users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-1/3 px-4 py-2 border border-neutral-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button
+            onClick={handleAddUser}
+            className="py-2 px-4 bg-[#4F46E5] text-white font-semibold rounded-2xl hover:bg-[#357a8d]"
+          >
+            Add New User
+          </button>
         </div>
-      )}
 
-      <div className="flex justify-between items-center mb-6">
-        <input
-          type="text"
-          placeholder="Search Users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-1/3 p-2 border border-gray-700 rounded-lg bg-gray-800 text-white"
-        />
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleAddUser}
-          className="py-2 px-4 bg-gradient-to-r from-green-500 to-blue-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-700"
-        >
-          Add New User
-        </motion.button>
-      </div>
-
-      <table className="w-full table-auto bg-gray-800 border border-gray-700 text-white">
-        <thead>
-          <tr className="bg-gray-700">
-            <th className="py-3 px-4">UserID</th>
-            <th className="py-3 px-4">Name</th>
-            <th className="py-3 px-4">Email</th>
-            <th className="py-3 px-4">Role</th>
-            <th className="py-3 px-4">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user, index) => (
-              <tr key={user.id} className="border-b border-gray-700">
-                <td className="py-3 px-4">{index + 1}</td>
-                <td className="py-3 px-4">{user.name}</td>
-                <td className="py-3 px-4">{user.email}</td>
-                <td className="py-3 px-4">{user.role}</td>
-                <td className="py-3 px-4 flex space-x-2">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleEditUser(user)}
-                    className="py-1 px-2 bg-yellow-500 text-white rounded-lg"
-                  >
-                    Edit
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleDeleteUser(user._id)}
-                    className="py-1 px-2 bg-red-500 text-white rounded-lg"
-                  >
-                    Delete
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleViewActivities(user._id)}
-                    className="py-1 px-2 bg-blue-500 text-white rounded-lg"
-                  >
-                    View Activities
-                  </motion.button>
+        <table className="w-full table-auto bg-gray-800 border border-gray-700 text-white">
+          <thead>
+            <tr className="bg-gray-700">
+              <th className="py-3 px-4">UserID</th>
+              <th className="py-3 px-4">Name</th>
+              <th className="py-3 px-4">Email</th>
+              <th className="py-3 px-4">Role</th>
+              <th className="py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user, index) => (
+                <tr key={user.id} className="border-b border-gray-700">
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">{user.name}</td>
+                  <td className="py-3 px-4">{user.email}</td>
+                  <td className="py-3 px-4">{user.role}</td>
+                  <td className="py-3 px-4 flex space-x-2">
+                    <button
+                      onClick={() => handleEditUser(user)}
+                      className="py-1 px-2 bg-yellow-500 text-white rounded-lg"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user._id)}
+                      className="py-1 px-2 bg-red-500 text-white rounded-lg"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleViewActivities(user._id)}
+                      className="py-1 px-2 bg-blue-500 text-white rounded-lg"
+                    >
+                      View Activities
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center py-4">
+                  No users found.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="text-center py-4">
-                No users found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <div className="flex justify-between items-center mb-6">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleLogout}
-        className="mt-6 py-3 px-4 bg-gradient-to-r from-blue-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-emerald-700"
-      >
-        Logout
-      </motion.button>
-
-      <motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={handleDownloadUsers}
-  className="mt-6 py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-700"
->
-  Download Users Report
-</motion.button>
-</div>
+            )}
+          </tbody>
+        </table>
 
       {/* Modal for editing user */}
       {selectedUser && (
@@ -401,7 +346,7 @@ const AdminDashboardPage = () => {
       )}
 
       {/* Activities Modal */}
-{isActivitiesModalOpen && (
+      {isActivitiesModalOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
     <div className="bg-gray-800 p-6 rounded-lg shadow-lg relative w-96">
       <button
@@ -436,12 +381,9 @@ const AdminDashboardPage = () => {
     </div>
   </div>
 )}
-
-      
-    </motion.div>
-  );
-
-
+</motion.div>
+</div>
+);
 };
 
 export default AdminDashboardPage;
