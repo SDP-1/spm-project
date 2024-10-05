@@ -87,6 +87,7 @@ export const useAuthStore = create((set, get) => ({
 			throw error;
 		}
 	},
+	
 	deleteUser: async () => {
 		set({ isLoading: true, error: null });
 		try {
@@ -110,6 +111,7 @@ export const useAuthStore = create((set, get) => ({
 			throw error;
 		}
 	},
+
 	changePassword: async (currentPassword, newPassword) => {
 		set({ isLoading: true, error: null });
 		try {

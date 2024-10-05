@@ -10,7 +10,9 @@ import {
     updateUser,
     getUsers,
     updateUserRole,
-    changePassword 
+    changePassword,
+    register,
+    downloadUsers
 } from '../controllers/auth.controller.js';
 
 const router = express.Router();
@@ -33,5 +35,8 @@ router.get('/users', getUsers);
 
 router.put('/update-role', updateUserRole);
 router.put('/change-password/:id', changePassword);
+
+router.post('/register', register);
+router.get('/download-users', downloadUsers);
 
 export default router;

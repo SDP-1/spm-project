@@ -1,6 +1,7 @@
 import { User } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
+import { Parser } from 'json2csv';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 import { sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/emails.js';
 
@@ -28,6 +29,7 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
             name,
+            role: role || 'user',
             isVerified: true
         });
 
@@ -272,5 +274,74 @@ export const updateUserRole = async (req, res) => {
     } catch (error) {
         console.log("Error in changePassword", error);
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const register = async (req, res) => {
+    const { email, password, name, role } = req.body; // role added for admin usage
+
+    try {
+        if (!email || !password || !name) {
+            throw new Error('All fields are required');
+        }
+
+        // Check if the user already exists
+        const userAlreadyExists = await User.findOne({ email });
+        if (userAlreadyExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcryptjs.hash(password, 12);
+
+        // Create the user
+        const user = new User({
+            email,
+            password: hashedPassword,
+            name,
+            role: role || 'user',
+            isVerified: true
+        });
+
+        await user.save();
+
+        // Generate JWT and set it as a cookie
+        generateTokenAndSetCookie(res, user._id);
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            user: { ...user._doc, password: undefined },
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const downloadUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password').lean(); // Fetch users without passwords and return plain JS objects
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ success: false, message: 'No users found' });
+        }
+
+        const json2csvParser = new Parser();
+        let csv;
+        try {
+            csv = json2csvParser.parse(users); // Convert user data to CSV format
+        } catch (error) {
+            console.error("Error parsing CSV", error);
+            return res.status(500).json({ success: false, message: 'Error generating CSV file' });
+        }
+
+        // Set the headers for the download
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+
+        res.status(200).send(csv); // Send the CSV file as a response
+    } catch (error) {
+        console.error("Error in downloadUsers", error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
