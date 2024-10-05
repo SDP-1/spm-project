@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import axios from "axios";
+import { format } from 'date-fns';
 
 const AdminDashboardPage = () => {
   const { logout } = useAuthStore();
@@ -14,6 +15,10 @@ const AdminDashboardPage = () => {
   // const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState("");
   const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "user" });
+
+  // New states for activities
+  const [activities, setActivities] = useState([]);
+  const [isActivitiesModalOpen, setIsActivitiesModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -86,6 +91,7 @@ const AdminDashboardPage = () => {
     }
   };
 
+
   const handleDownloadUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/auth/download-users", {
@@ -105,9 +111,27 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const handleViewActivities = (userId) => {
-    console.log(`Viewing activities of user with ID: ${userId}`);
+  const handleViewActivities = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/auth/activities/${userId}`);
+      if (response.data.success) {
+        setActivities(response.data.activities);
+        setIsActivitiesModalOpen(true); // Open activities modal
+      }
+    } catch (error) {
+      console.error("Error fetching user activities:", error);
+    }
   };
+
+  // Close activities modal
+  const closeActivitiesModal = () => {
+    setIsActivitiesModalOpen(false);
+    setActivities([]);
+  };
+
+  const filteredUsers = Array.isArray(users)
+    ? users.filter((u) => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : [];
 
   const handleUpdateRole = async () => {
     if (!selectedUser || !newRole) return;
@@ -146,9 +170,9 @@ const AdminDashboardPage = () => {
     setSelectedUser(null);
   };
 
-  const filteredUsers = Array.isArray(users)
-    ? users.filter((u) => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : [];
+  // const filteredUsers = Array.isArray(users)
+  //   ? users.filter((u) => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  //   : [];
 
   return (
     <motion.div
@@ -225,7 +249,7 @@ const AdminDashboardPage = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => handleViewActivities(user.id)}
+                    onClick={() => handleViewActivities(user._id)}
                     className="py-1 px-2 bg-blue-500 text-white rounded-lg"
                   >
                     View Activities
@@ -375,6 +399,44 @@ const AdminDashboardPage = () => {
           </div>
         </div>
       )}
+
+      {/* Activities Modal */}
+{isActivitiesModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="bg-gray-800 p-6 rounded-lg shadow-lg relative w-96">
+      <button
+        className="absolute top-2 right-2 text-white"
+        onClick={closeActivitiesModal}
+      >
+        &times;
+      </button>
+      <h2 className="text-2xl mb-4 text-white">User Activities</h2>
+
+      {activities.length > 0 ? (
+        <ul className="text-white">
+          {activities.map((activity, index) => (
+            <li key={index} className="mb-2 flex justify-between items-center">
+            <span className="text-gray-300">{activity.description}</span>
+            <span className="text-sm text-gray-500">
+              {activity.date ? format(new Date(activity.date), 'Pp') : 'Date not available'}
+            </span>
+          </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">No activities found for this user.</p>
+      )}
+              <button
+                onClick={closeActivitiesModal}
+                className="py-2 px-4 bg-red-500 text-white rounded-lg"
+              >
+                Close
+              </button>
+            
+    </div>
+  </div>
+)}
+
       
     </motion.div>
   );

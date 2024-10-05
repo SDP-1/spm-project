@@ -17,11 +17,6 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
 
-    profilePicture: {
-        type: String,
-        default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg',
-    },
-
     lastLogin: {
         type: Date,
         default: Date.now,
@@ -40,6 +35,12 @@ const userSchema = new mongoose.Schema({
 
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
+
+    activities: [{
+        action: { type: String, required: true }, // Description of the action
+        timestamp: { type: Date, default: Date.now }, // When the action occurred
+        metadata: { type: Object, default: {} }, // Optional metadata (like IP, device info)
+    }]
 
 }, { timestamps: true });
 //timestamps: true will automatically create a createdAt and updatedAt field for each document that is saved to the database.
