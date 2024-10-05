@@ -14,7 +14,7 @@
      },
      {
         "src": "/(.*)",
-        "dest": "routers/taskRoutes.js"
+        "dest": "src/routers/taskRoutes.js"
       }
     ]
    }
