@@ -23,7 +23,9 @@ const TaskForm = ({
         type="text"
         id="taskName"
         className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+          disable
+            ? "opacity-50 bg-gray-200 text-gray-700"
+            : "bg-gray-100 text-black"
         }`}
         value={taskName}
         onChange={(e) => !disable && setTaskName(e.target.value)}
@@ -42,7 +44,9 @@ const TaskForm = ({
       <textarea
         id="description"
         className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+          disable
+            ? "opacity-50 bg-gray-200 text-gray-700"
+            : "bg-gray-100 text-black"
         }`}
         rows="4"
         value={description}
@@ -64,7 +68,9 @@ const TaskForm = ({
         value={projectId}
         onChange={(e) => !disable && setProject(e.target.value)}
         className={`shadow border rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 ${
-          disable ? "opacity-50 bg-gray-200 text-gray-700" : "bg-gray-100 text-black"
+          disable
+            ? "opacity-50 bg-gray-200 text-gray-700"
+            : "bg-gray-100 text-black"
         }`}
         disabled={disable}
       >
@@ -75,7 +81,6 @@ const TaskForm = ({
           </option>
         ))}
       </select>
-      <FaChevronDown className="absolute right-3 top-2/3 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
     </div>
   </>
 );

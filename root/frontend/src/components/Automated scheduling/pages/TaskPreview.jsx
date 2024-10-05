@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaStar, FaEllipsisV, FaSearch, FaSort } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "../component/TaskModal";
+import TaskDetailModal from "./TaskDetailModal";
 
 const TaskPreview = () => {
   const [tasks, setTasks] = useState([]);
@@ -14,6 +15,9 @@ const TaskPreview = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const navigate = useNavigate();
   const menuRefs = useRef({});
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State to control TaskDetailModal visibility
+  const [taskToPrint, setTaskToPrint] = useState(null); // Track the task to print
 
   // Fetch and sort tasks
   useEffect(() => {
@@ -43,8 +47,7 @@ const TaskPreview = () => {
       });
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Sorting tasks
@@ -71,6 +74,15 @@ const TaskPreview = () => {
         task.description.toLowerCase().includes(value)
     );
     setFilteredTasks(sortTasks(filtered, sortType));
+  };
+
+  // Handle showing task details for printing
+  const handleShowDetailsPrintModel = (taskId) => {
+    const task = tasks.find((task) => task._id === taskId);
+    if (task) {
+      setTaskToPrint(task); // Set the task to be printed
+      setIsDetailModalOpen(true); // Open the TaskDetailModal
+    }
   };
 
   // Sort toggle
@@ -232,6 +244,15 @@ const TaskPreview = () => {
                     ref={(el) => (menuRefs.current[task._id] = el)}
                   >
                     <button
+                      className="w-full text-left px-4 py-1 text-blue-600 hover:bg-gray-100 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowDetailsPrintModel(task._id); // Open modal for printing
+                      }}
+                    >
+                      Print Details
+                    </button>
+                    <button
                       className="w-full text-left px-4 py-1 text-red-600 hover:bg-gray-100 text-xs"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -262,6 +283,15 @@ const TaskPreview = () => {
       >
         + Add Task
       </button>
+
+      {/* Modal for printing task details */}
+      {isDetailModalOpen && taskToPrint && (
+        <TaskDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={() => setIsDetailModalOpen(false)}
+          task={taskToPrint}
+        />
+      )}
 
       {/* Modal for adding new task */}
       {isModalOpen && (
