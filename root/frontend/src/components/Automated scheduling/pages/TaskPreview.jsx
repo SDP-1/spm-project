@@ -152,6 +152,10 @@ const TaskPreview = () => {
     navigate(`/task/${taskId}`);
   };
 
+  const handleShowQualityGate = (taskId) => {
+    // navigate(`/task/${taskId}`);
+  };
+
   // Format date
   const formatDate = (dateString) => {
     const options = {
@@ -221,7 +225,7 @@ const TaskPreview = () => {
           <div
             key={task._id}
             className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-            onDoubleClick={() => handleShowDetails(task._id)} // Navigate on double-click
+            onDoubleClick={() => handleShowQualityGate(task._id)} // Navigate on double-click
           >
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-800">
@@ -249,6 +253,15 @@ const TaskPreview = () => {
                     className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg py-2"
                     ref={(el) => (menuRefs.current[task._id] = el)}
                   >
+                    <button
+                      className="w-full text-left px-4 py-1 text-blue-600 hover:bg-gray-100 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowDetails(task._id); // Open modal for printing
+                      }}
+                    >
+                      Edit Task
+                    </button>
                     <button
                       className="w-full text-left px-4 py-1 text-blue-600 hover:bg-gray-100 text-xs"
                       onClick={(e) => {

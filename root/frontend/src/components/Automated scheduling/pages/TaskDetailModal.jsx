@@ -77,9 +77,7 @@ const TaskDetailModal = ({ isOpen, onClose, task }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur bg-opacity-10 bg-gray-800">
-      {/* Modal Container */}
       <div className="relative bg-white rounded-3xl shadow-lg p-8 w-full max-w-lg">
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-all duration-300"
@@ -87,13 +85,12 @@ const TaskDetailModal = ({ isOpen, onClose, task }) => {
           <FaTimes className="text-gray-500 h-5 w-5" />
         </button>
 
-        {/* Modal Header */}
         <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
           Task Details
         </h2>
 
-        {/* Task Information */}
         <div ref={printRef} className="space-y-4 text-gray-600">
+          {/* Task Details */}
           <div className="flex justify-between items-center">
             <span className="font-bold">Name:</span>
             <span>{task.taskName}</span>
@@ -110,20 +107,41 @@ const TaskDetailModal = ({ isOpen, onClose, task }) => {
             <span className="font-bold">Recurring:</span>
             <span>{task.recurring ? "Yes" : "No"}</span>
           </div>
+
+          {/* Recurrence Details */}
           {task.recurring && (
             <>
               <div className="flex justify-between items-center">
                 <span className="font-bold">Frequency Type:</span>
                 <span>{task.frequencyType}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="font-bold">Frequency Value:</span>
-                <span>{task.frequencyValue}</span>
-              </div>
-              {task.SpecificTime && (
+              {task.frequencyType === "Daily" && (
                 <div className="flex justify-between items-center">
                   <span className="font-bold">Specific Time:</span>
-                  <span>{new Date(task.SpecificTime).toLocaleString()}</span>
+                  <span>Daily 12:00 AM</span>
+                </div>
+              )}
+              {task.frequencyType === "SpecificDate" && (
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Specific Time:</span>
+                  <span>
+                    {new Date(task.SpecificTime).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+              )}
+              {task.frequencyType === "SpecificTime" && (
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Specific Time (24h):</span>
+                  <span>{task.SpecificTime}</span>
+                </div>
+              )}
+              {task.frequencyType === "Hourly" && (
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Frequency Value:</span>
+                  <span>{task.frequencyValue} hour(s)</span>
                 </div>
               )}
             </>
