@@ -154,6 +154,7 @@ const TaskPreview = () => {
 
   const handleShowQualityGate = (taskId) => {
     // navigate(`/task/${taskId}`);
+    navigate(`/analize/task/status`);
   };
 
   // Format date
