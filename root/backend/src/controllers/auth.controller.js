@@ -1,6 +1,7 @@
 import { User } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
+import { Parser } from 'json2csv';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 import { sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/emails.js';
 
@@ -28,7 +29,9 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
             name,
-            isVerified: true
+            role: 'user',
+            isVerified: true,
+            activities: [{ action: 'User signed up', metadata: { email } }]
         });
 
         await user.save();
@@ -65,10 +68,18 @@ export const login = async (req, res) => {
             return res.status(400).json({success: false, message: 'Invalid credentials'});
         }
 
-        generateTokenAndSetCookie(res, user._id);
+        // Log the activity
+        user.activities.push({
+            action: 'User login',
+            timestamp: new Date(),
+            metadata: { ip: req.ip } // Optional: Add IP address or other details
+        });
 
+        // Update last login and save the user
         user.lastLogin = new Date();
         await user.save();
+
+        generateTokenAndSetCookie(res, user._id);
 
         res.status(200).json({
             success: true, 
@@ -138,6 +149,13 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiresAt = undefined;
 
+    // Log the activity
+    user.activities.push({
+        action: 'Password reset',
+        timestamp: new Date(),
+        metadata: { ip: req.ip }
+    });
+
     await user.save();
     
     await sendResetSuccessEmail(user.email);
@@ -170,11 +188,17 @@ export const deleteUser = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
-        const user = await User.findByIdAndDelete(userId);  // Use userId from params
-        
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        const user = await User.findById(userId);
+if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+user.activities.push({
+    action: 'User account deleted',
+    timestamp: new Date(),
+    metadata: { deletedBy: req.userId }
+});
+await user.save(); // Save activity before deletion
+await User.findByIdAndDelete(userId);
+
 
         res.clearCookie('token');
 
@@ -224,13 +248,20 @@ export const getUsers = async (req, res) => {
 };
 
 export const updateUserRole = async (req, res) => {
-    const { userId, role } = req.body; // Expecting userId and role from the request
+    const { userId, role } = req.body;
   
     try {
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
+
+      // Log the activity before updating the role
+      user.activities.push({
+        action: 'User role updated',
+        timestamp: new Date(),
+        metadata: { oldRole: user.role, newRole: role, updatedBy: req.userId }
+    });
   
       user.role = role; // Update the role
       await user.save(); // Save the changes
@@ -243,7 +274,7 @@ export const updateUserRole = async (req, res) => {
 };
   
 
-  export const changePassword = async (req, res) => {
+export const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     try {
@@ -266,11 +297,116 @@ export const updateUserRole = async (req, res) => {
 
         // Update the user's password
         user.password = hashedNewPassword;
+
+        // Log the activity
+        user.activities.push({
+            action: 'Password changed',
+            timestamp: new Date(),
+            metadata: { ip: req.ip }
+        });
+
         await user.save();
 
         res.status(200).json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
         console.log("Error in changePassword", error);
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const register = async (req, res) => {
+    const { email, password, name, role } = req.body; // role added for admin usage
+
+    try {
+        if (!email || !password || !name) {
+            throw new Error('All fields are required');
+        }
+
+        // Check if the user already exists
+        const userAlreadyExists = await User.findOne({ email });
+        if (userAlreadyExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcryptjs.hash(password, 12);
+
+        // Create the user
+        const user = new User({
+            email,
+            password: hashedPassword,
+            name,
+            role: role || 'user',
+            isVerified: true
+        });
+
+        await user.save();
+
+        // Generate JWT and set it as a cookie
+        generateTokenAndSetCookie(res, user._id);
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            user: { ...user._doc, password: undefined },
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const downloadUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password').lean(); // Fetch users without passwords and return plain JS objects
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ success: false, message: 'No users found' });
+        }
+
+        const json2csvParser = new Parser();
+        let csv;
+        try {
+            csv = json2csvParser.parse(users); // Convert user data to CSV format
+        } catch (error) {
+            console.error("Error parsing CSV", error);
+            return res.status(500).json({ success: false, message: 'Error generating CSV file' });
+        }
+
+        // Set the headers for the download
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+
+        res.status(200).send(csv); // Send the CSV file as a response
+    } catch (error) {
+        console.error("Error in downloadUsers", error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const viewUserActivities = async (req, res) => {
+    try {
+        const userId = req.params.id; // Get user ID from route parameter
+        const limit = parseInt(req.query.limit) || 10; // Get limit from query or default to 10
+        const skip = parseInt(req.query.skip) || 0; // Get skip from query or default to 0
+
+        // Fetch the user and only select the activities field
+        const user = await User.findById(userId).select('activities')
+            .slice('activities', [skip, limit]); // Limit the number of activities
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Map the activities to the desired format
+        const formattedActivities = user.activities.map(activity => ({
+            description: activity.action, // Assuming `action` contains the description
+            date: activity.timestamp || new Date().toISOString() // Use timestamp or current date if not available
+        }));
+
+        console.log('User Activities:', formattedActivities);
+        res.status(200).json({ success: true, activities: formattedActivities });
+    } catch (error) {
+        console.log("Error fetching user activities", error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };

@@ -10,7 +10,10 @@ import {
     updateUser,
     getUsers,
     updateUserRole,
-    changePassword 
+    changePassword,
+    register,
+    downloadUsers,
+    viewUserActivities
 } from '../controllers/auth.controller.js';
 
 const router = express.Router();
@@ -33,5 +36,10 @@ router.get('/users', getUsers);
 
 router.put('/update-role', updateUserRole);
 router.put('/change-password/:id', changePassword);
+
+router.post('/register', register);
+router.get('/download-users', downloadUsers);
+
+router.get('/activities/:id', viewUserActivities);
 
 export default router;
